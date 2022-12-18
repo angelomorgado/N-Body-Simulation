@@ -101,9 +101,6 @@ int main()
         // input
         processInput(window, &camera);
 
-        // FRAMEBUFFER - Bind to framebuffer and draw scene
-        framebuffer.bind();
-
         // render
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -124,10 +121,6 @@ int main()
         // Draw the Skybox 
         // skybox.Draw(skyboxShader, camera);
 
-		// Unbind the framebuffer and draw the quad
-        framebuffer.unbind();
-        framebuffer.drawQuad(screenShader);
-		
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();

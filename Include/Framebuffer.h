@@ -1,3 +1,11 @@
+/*
+    Framebuffer.h:
+
+        - It implements a framebuffer object that can be used to render to a texture.
+        - It also implements a quad that can be used to draw the texture to the screen.
+        - To use it, you need to bind it, draw to it, then unbind it, and lastly draw the quad, all inside the main loop.
+*/
+
 #pragma once
 
 #ifndef FRAMEBUFFER_H
