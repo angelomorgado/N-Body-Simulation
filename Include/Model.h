@@ -50,7 +50,8 @@ class Model
 
         // draws the model, and thus all its meshes
         void Draw(Shader& shader);
-	
+        void Draw(Shader& shader, Material material);
+        
         // change the diffuse texture of all meshes in the model
         void changeTexture(const char* name, string dir);
 

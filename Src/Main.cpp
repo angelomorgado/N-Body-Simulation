@@ -1,3 +1,14 @@
+/**
+ * @file Main.cpp
+ * @author Ângelo Morgado, Henrique Jesus, Manuel Magalhães
+ * @brief The main file of the project where the project is initialized and the main loop is executed.
+ * @version 1
+ * @date 2022-12-18
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -15,6 +26,7 @@
 #include "Model.h"
 #include "Skybox.h"
 #include "Framebuffer.h"
+#include "Particles.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -26,12 +38,21 @@
 Camera camera;
 CameraPos cameraPos;
 
+// Particle variables
+// Create a class for this
+int nParticles = 1000;
+float minMass = 1.0f;
+float maxMass = 100.0f;
+float minRadius = 100000.0f;
+float maxRadius = 99999.0f;
+float minSpeed = 0.0f;
+float maxSpeed = 0.0f;
+
+
 // =============================== Files ===========================================
-const char* cubePath = "Media/Objects/Pyramid/pyramid.obj";
-const char* skullPath = "Media/Objects/Skull/Skull.obj";
-const char* alienPath = "Media/Objects/Alien/alien.obj";
-const char* planePath = "Media/Objects/Plane/plane.obj";
+const char* cubePath = "Media/Objects/Cube_tex/cube_textured.obj";
 const char* skyboxPath = "Media/Skyboxes/skybox_galaxy/";
+const char* alienPath = "Media/Objects/Alien/alien.obj";
 
 int main()
 {
@@ -46,23 +67,20 @@ int main()
     //Shader based on the file
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	// Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
-	
-    Shader screenShader("Shaders/Screen/simpleScreen.vert", "Shaders/Screen/simpleScreen.frag");
-
     ComputeShader computeShader("Shaders/Compute/basic_shader.comp");
 
     //================================= Models ====================================================
 
 	// Load the model
     // Skybox skybox(skyboxPath);
-    // Model cube(cubePath);
-	// cube.changeTexture("random.jpg","Media/Textures");
-
-    // =============================== Framebuffer ===================================
-    Framebuffer framebuffer;
+    Model cube(cubePath);
+    Model alien(alienPath);
+    alien.changeTexture("alien.png","Media/Objects/Alien");
 
     //================================= Particles =====================================~
     
+    // Create the particles
+    Particles particles(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed);
 	
 	//================================ Light ========================================
     // Default Light
@@ -88,9 +106,6 @@ int main()
  
     // Process all input Callbacks
 	processCallbacks(window, &camera, &cameraPos);
-
-    // draw as wireframe
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
     // =================================== Main loop ===============================================
     while (!glfwWindowShouldClose(window))
@@ -105,18 +120,18 @@ int main()
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Draw an object  
-        // objectShader.use();
-		// setView(&objectShader, camera.GetViewMatrix());
-		// setProjection(&objectShader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        // setModel(
-        //     &objectShader, // shader
-        //     glm::vec3(0.0f,0.5f,0.0f), // translation
-		// 	glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-        //     0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
-        //     glm::vec3(1.0f) // scale
-        //     );
-        // cube.Draw(objectShader);
+        // Draw the particles
+        objectShader.use();
+		setView(&objectShader, camera.GetViewMatrix());
+		setProjection(&objectShader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        setModel(
+            &objectShader, // shader
+            glm::vec3(0.0f, 1.0f, 0.0f), // translation
+            glm::vec3(1.0f, 0.0f, 0.0f), // rotation axis
+            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
+            glm::vec3(1.0f) // scale
+        );
+        particles.Draw();
 		
         // Draw the Skybox 
         // skybox.Draw(skyboxShader, camera);

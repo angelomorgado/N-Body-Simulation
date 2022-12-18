@@ -21,6 +21,7 @@
 Camera* cam;
 CameraPos* camPos;
 Skybox* skybox;
+bool wireframe = false;
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     cam->ProcessMouseScroll(static_cast<float>(yoffset));
@@ -54,11 +55,15 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetWindowShouldClose(window, true);
 
 	// Keybinds
-	// if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
-	// {
-	// 	*is_filtered = !*is_filtered;
-	// 	std::cout << "Filter: " << *is_filtered << std::endl;
-	// }
+	if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+        wireframe = !wireframe;
+
+        if (wireframe)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
