@@ -21,7 +21,6 @@
 Camera* cam;
 CameraPos* camPos;
 Skybox* skybox;
-bool* is_filtered;
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
     cam->ProcessMouseScroll(static_cast<float>(yoffset));
@@ -55,11 +54,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         glfwSetWindowShouldClose(window, true);
 
 	// Keybinds
-	if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
-	{
-		*is_filtered = !*is_filtered;
-		std::cout << "Filter: " << *is_filtered << std::endl;
-	}
+	// if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	// {
+	// 	*is_filtered = !*is_filtered;
+	// 	std::cout << "Filter: " << *is_filtered << std::endl;
+	// }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -90,10 +89,9 @@ void processInput(GLFWwindow* window, Camera* camera)
 
 }
 
-void processCallbacks(GLFWwindow* window, Camera* camera, CameraPos* cameraPos, bool* isFiltered){
+void processCallbacks(GLFWwindow* window, Camera* camera, CameraPos* cameraPos){
     cam = camera;
     camPos = cameraPos;
-    is_filtered = isFiltered;
 
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);

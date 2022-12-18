@@ -6,6 +6,7 @@
 
 #include "Configuration.h"
 #include "Shader.h"
+#include "ComputeShader.h"
 #include "Camera.h"
 #include "Utils.h"
 #include "Callbacks.h"
@@ -36,7 +37,7 @@ int main()
 {
     //=================================== Setup ==============================================
     glfw_setup();
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Reflections using cubemaps", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "N-Body Simulation", NULL, NULL);
     window_setup(window);
     glad_setup();
 	printGPUinfo();
@@ -44,38 +45,35 @@ int main()
     //=================================== Shaders ==============================================
     //Shader based on the file
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
-	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+	// Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
 	
-    bool is_filtered = false;
-    Shader screenShader("Shaders/Screen/simpleScreen.vert", "Shaders/Screen/laplacian_edge_detection_filter.frag");
-    Shader screenShader_noFilter("Shaders/Screen/simpleScreen.vert", "Shaders/Screen/simpleScreen.frag");
+    Shader screenShader("Shaders/Screen/simpleScreen.vert", "Shaders/Screen/simpleScreen.frag");
+
+    ComputeShader computeShader("Shaders/Compute/basic_shader.comp");
 
     //================================= Models ====================================================
 
 	// Load the model
-    Skybox skybox(skyboxPath);
-    Model cube(cubePath);
-	cube.changeTexture("random.jpg","Media/Textures");
-    Model plane(planePath);
-    plane.changeTexture("wood_floor.png", "Media/Textures");
-    Model skull(skullPath);
-    Model alien(alienPath);
+    // Skybox skybox(skyboxPath);
+    // Model cube(cubePath);
+	// cube.changeTexture("random.jpg","Media/Textures");
 
     // =============================== Framebuffer ===================================
     Framebuffer framebuffer;
+
+    //================================= Particles =====================================~
+    
 	
 	//================================ Light ========================================
-
+    // Default Light
     objectShader.use();
     objectShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
-
-    // Light
     objectShader.setVec3("light.position", 1.0f, 5.0f, 1.0f);
     objectShader.setVec3("light.ambient", 0.6f, 0.6f, 0.6f);
     objectShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
     objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 
-    // Material
+    // Default Material
     Material default_mat;
     default_mat.Ambient   = glm::vec3(1.0f);
     default_mat.Diffuse   = glm::vec3(0.6f);
@@ -89,7 +87,7 @@ int main()
     );
  
     // Process all input Callbacks
-	processCallbacks(window, &camera, &cameraPos, &is_filtered);
+	processCallbacks(window, &camera, &cameraPos);
 
     // draw as wireframe
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -110,65 +108,25 @@ int main()
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Pyramid  
-        objectShader.use();
-		setView(&objectShader, camera.GetViewMatrix());
-		setProjection(&objectShader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        setModel(
-            &objectShader, // shader
-            glm::vec3(0.0f,0.5f,0.0f), // translation
-			glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
-            glm::vec3(1.0f) // scale
-            );
-        cube.Draw(objectShader);
-
-        // Skull  
-        setModel(
-            &objectShader, // shader
-            glm::vec3(2.0f,2.0f, 2.0f), // translation
-            glm::vec3(1.0f, 0.0f, 0.0f), // rotation axis
-            -90.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
-            glm::vec3(0.05f) // scale
-        );
-        skull.Draw(objectShader);
-
-        // Alien  
-        setModel(
-            &objectShader, // shader
-            glm::vec3(-2.0f, 1.0f, -2.0f), // translation
-            glm::vec3(1.0f, 0.0f, 0.0f), // rotation axis
-            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
-            glm::vec3(0.5f) // scale
-        );
-        alien.Draw(objectShader);
+        // Draw an object  
+        // objectShader.use();
+		// setView(&objectShader, camera.GetViewMatrix());
+		// setProjection(&objectShader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        // setModel(
+        //     &objectShader, // shader
+        //     glm::vec3(0.0f,0.5f,0.0f), // translation
+		// 	glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
+        //     0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
+        //     glm::vec3(1.0f) // scale
+        //     );
+        // cube.Draw(objectShader);
 		
-        // Plane  
-        setModel(
-            &objectShader, // shader
-            glm::vec3(0.0f), // translation
-            glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
-            glm::vec3(1.0f) // scale
-        );
-        Material mat = plane.model_material;
-        objectShader.setVec3("material.ambient", default_mat.Ambient);
-        objectShader.setVec3("material.diffuse", default_mat.Diffuse);
-        objectShader.setVec3("material.specular", default_mat.Specular);
-        objectShader.setFloat("material.shininess", default_mat.Shininess);
-        plane.Draw(objectShader);
-		
-        // Skybox 
-        skybox.Draw(skyboxShader, camera);
+        // Draw the Skybox 
+        // skybox.Draw(skyboxShader, camera);
 
-		// FRAMEBUFFER BIND TO DEFAULT AND DRAW THE QUAD THAT CONTAINS THE SCREEN - It is necessary after binding
-		framebuffer.unbind();
-        if (is_filtered) {
-            framebuffer.drawQuad(screenShader_noFilter);
-        }
-        else {
-            framebuffer.drawQuad(screenShader);
-        }
+		// Unbind the framebuffer and draw the quad
+        framebuffer.unbind();
+        framebuffer.drawQuad(screenShader);
 		
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
