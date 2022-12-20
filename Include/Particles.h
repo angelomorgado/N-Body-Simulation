@@ -41,11 +41,24 @@ private:
     // Attributes
     GLuint nParticles;
     std::vector<Particle> particles;
+
+    // Attributes
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec3> velocities;
+    std::vector<float> masses;
+    std::vector<float> radiuses;
+    std::vector<glm::vec3> colors;
+    std::vector<float> sizes;
     GLuint spriteTexture;
 
     // Buffers
-    GLuint VBO;
-    GLuint EBO;
+    GLuint positionBuffer;
+    GLuint velocityBuffer;
+    GLuint massBuffer;
+    GLuint radiusBuffer;
+    GLuint colorBuffer;
+    GLuint sizeBuffer;
+
 
     // VAO
     GLuint VAO;

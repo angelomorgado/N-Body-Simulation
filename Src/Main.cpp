@@ -34,6 +34,15 @@
 #include <iostream>
 #include <thread>
 
+void checkForErrors()
+{
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "OpenGL error: " << err << std::endl;
+    }
+}
+
 // ============================= Global variables ==================================
 Camera camera;
 CameraPos cameraPos;
@@ -56,7 +65,7 @@ int main()
     //Shader based on the file
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
-    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
     ComputeShader computeShader("Shaders/Compute/basic_shader.comp");
 
     //================================= Models ====================================================
