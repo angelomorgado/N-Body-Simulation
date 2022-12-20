@@ -84,7 +84,7 @@ int main()
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles
-        1.5f, // Maximum radius of the particles
+        1.4f, // Maximum radius of the particles
         0.0f, // Minimum speed of the particles
         0.0f, // Maximum speed of the particles
         4.0f, // Minimum size of the particles
