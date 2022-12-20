@@ -87,8 +87,8 @@ int main()
         1.5f, // Maximum radius of the particles
         0.0f, // Minimum speed of the particles
         0.0f, // Maximum speed of the particles
-        4.0f, // Minimum size of the particles
-        10.1f // Maximum size of the particles
+        0.2f, // Minimum size of the particles
+        0.8f // Maximum size of the particles
     );
 	
 	//================================ Light ========================================

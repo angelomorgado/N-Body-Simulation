@@ -20,22 +20,22 @@ void main()
     mat4 m = projection;
 
     // Bottom left
-    gl_Position = m * (vec4(-siu,-siu,siu,0.0) + gl_in[0].gl_Position);
+    gl_Position = m * (vec4(-size,-size,size,0.0) + gl_in[0].gl_Position);
     texCoord = vec2(0.0,0.0);
     EmitVertex();
 
     // Bottom right
-    gl_Position = m * (vec4(siu,-siu,siu,0.0) + gl_in[0].gl_Position);
+    gl_Position = m * (vec4(size,-size,size,0.0) + gl_in[0].gl_Position);
     texCoord = vec2(1.0,0.0);
     EmitVertex();
 
     // Top left
-    gl_Position = m * (vec4(-siu,siu,siu,0.0) + gl_in[0].gl_Position);
+    gl_Position = m * (vec4(-size,size,size,0.0) + gl_in[0].gl_Position);
     texCoord = vec2(0.0,1.0);
     EmitVertex();
 
     // Top right
-    gl_Position = m * (vec4(siu,siu,siu,0.0) + gl_in[0].gl_Position);
+    gl_Position = m * (vec4(size,size,size,0.0) + gl_in[0].gl_Position);
     texCoord = vec2(1.0,1.0);
     EmitVertex();
 
