@@ -1,13 +1,13 @@
-#version 460 core
+#version 450 core
 
 // input variables
 layout (location = 0) in vec3 vertexPosition;
-layout (location = 1) in vec3 vertexVelocity;
-layout (location = 2) in float vertexMass;
-layout (location = 3) in float vertexRadius;
-layout (location = 4) in vec3 vertexColor;
-layout (location = 5) in float vertexSize;
-layout (location = 6) in vec2 vertexTextureCoords;
+layout (location = 1) in vec4 texCoords;
+layout (location = 2) in vec3 vertexColor;
+layout (location = 3) in float vertexSize;
+layout (location = 4) in float vertexMass;
+layout (location = 5) in vec3 vertexVelocity;
+layout (location = 6) in float vertexRadius;
 
 // output variables
 out vec3 color;
@@ -18,14 +18,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-const vec2 texCoords[] = vec2[](vec2(0,0), vec2(1,0), vec2(1,1), vec2(0,0), vec2(1,1), vec2(0,1));
+//const vec2 texCoords[] = vec2[](vec2(0,0), vec2(1,0), vec2(1,1), vec2(0,0), vec2(1,1), vec2(0,1));
 
 void main() {
-    // Get the index of the current particle
-    int index = gl_VertexID;
-
     // set the texture coordinates of the particle
-    textureCoords = texCoords[index];
+    textureCoords[0] = texCoords.xy;
+    textureCoords[1] = texCoords.zw;
 
     // set the color of the particle
     color = vertexColor;

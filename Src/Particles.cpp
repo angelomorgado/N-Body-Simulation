@@ -1,105 +1,146 @@
 #include <Particles.h>
 
-Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize){
-        this->nParticles = nParticles;
+Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+{
+    this->nParticles = nParticles;
+
+    // Fill the particles vector
+    for (int i=0; i<nParticles; i++)
+    {
+        Particle particle;
         
-        // Get the sprite texture
-        getSpriteTexture();
+        // Radius
+        particle.radius = rand() / (float)RAND_MAX;
+        particle.radius = minRadius + particle.radius * (maxRadius - minRadius);
 
-        // Initialize the particles
-        for (int i = 0; i < nParticles; i++)
-        {
-            // Radius of the particle
-            float radius = rand() / (float)RAND_MAX;
-            radius = minRadius + radius * (maxRadius - minRadius);
+        // Auxiliar variables
+        float theta = 2.0 * glm::pi<float>() * rand() / (float)RAND_MAX;
+        float phi = glm::pi<float>() * rand() / (float)RAND_MAX;
 
-            // Auxiliar variables to calculate the position
-            float theta = 2.0 * glm::pi<float>() * rand() / (float)RAND_MAX;
-            float phi = glm::pi<float>() * rand() / (float)RAND_MAX;
-
-            // Position - Random position that form a sphere
-            float x = radius * glm::sin(phi) * glm::cos(theta);
-            float y = radius * glm::sin(phi) * glm::sin(theta);
-            float z = radius * glm::cos(phi);
-            this->positions.push_back(glm::vec3(x, y, z));
-
-            // Velocity
-            float vx = rand() / (float)RAND_MAX;
-            float vy = rand() / (float)RAND_MAX;
-            float vz = rand() / (float)RAND_MAX;
-            vx = minSpeed + vx * (maxSpeed - minSpeed);
-            vy = minSpeed + vy * (maxSpeed - minSpeed);
-            vz = minSpeed + vz * (maxSpeed - minSpeed);
-            this->velocities.push_back(glm::vec3(vx, vy, vz));
-
-            // Mass
-            float mass = rand() / (float)RAND_MAX;
-            mass = minMass + mass * (maxMass - minMass);
-            this->masses.push_back(mass);
-
-            // Size
-            float size = rand() / (float)RAND_MAX;
-            size = minSize + size * (maxSize - minSize);
-            this->sizes.push_back(size);
-
-            // Color (the RGB values are between 0 and 1)
-            float r = rand() / (float)RAND_MAX;
-            float g = rand() / (float)RAND_MAX;
-            float b = rand() / (float)RAND_MAX;
-            this->colors.push_back(glm::vec3(r, g, b));
-        }
-
-        // Initialize the buffers
-        glGenBuffers(1, &this->positionBuffer);
-        glGenBuffers(1, &this->velocityBuffer);
-        glGenBuffers(1, &this->massBuffer);
-        glGenBuffers(1, &this->radiusBuffer);
-        glGenBuffers(1, &this->colorBuffer);
-        glGenBuffers(1, &this->sizeBuffer);
-
-        // Initialize the VAO
-        glGenVertexArrays(1, &this->VAO);
-        glBindVertexArray(this->VAO);
-        
         // Position
-        glBindBuffer(GL_ARRAY_BUFFER, this->positionBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        particle.position = glm::vec3(
+            particle.radius * glm::sin(phi) * glm::cos(theta), // x
+            particle.radius * glm::sin(phi) * glm::sin(theta), // y
+            particle.radius * glm::cos(phi) // z
+        );
 
         // Velocity
-        glBindBuffer(GL_ARRAY_BUFFER, this->velocityBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->velocities[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        float vx = rand() / (float)RAND_MAX;
+        vx = minSpeed + vx * (maxSpeed - minSpeed);
+        float vy = rand() / (float)RAND_MAX;
+        vy = minSpeed + vy * (maxSpeed - minSpeed);
+        float vz = rand() / (float)RAND_MAX;
+        vz = minSpeed + vz * (maxSpeed - minSpeed);
+        particle.velocity = glm::vec3(vx, vy, vz);
 
         // Mass
-        glBindBuffer(GL_ARRAY_BUFFER, this->massBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->masses[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-        // Radius
-        glBindBuffer(GL_ARRAY_BUFFER, this->radiusBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->radiuses[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        particle.mass = rand() / (float)RAND_MAX;
+        particle.mass = minMass + particle.mass * (maxMass - minMass);
 
         // Color
-        glBindBuffer(GL_ARRAY_BUFFER, this->colorBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->colors[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        particle.color = glm::vec3(
+            rand() / (float)RAND_MAX, // r
+            rand() / (float)RAND_MAX, // g
+            rand() / (float)RAND_MAX // b
+        );
 
         // Size
-        glBindBuffer(GL_ARRAY_BUFFER, this->sizeBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->sizes[0], GL_DYNAMIC_DRAW);
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        particle.size = rand() / (float)RAND_MAX;
+        particle.size = minSize + particle.size * (maxSize - minSize);
 
-        glBindVertexArray(0);
+        // Texture coordinates (for the quad) Cant be random
+        particle.texCoords = glm::vec4(
+            glm::vec2(0.0f, 0.0f), // Bottom left
+            glm::vec2(1.0f, 0.0f), // Bottom right
+            glm::vec2(1.0f, 1.0f), // Top right
+            glm::vec2(0.0f, 1.0f) // Top left
+        );
 
+        // Add the particle to the vector
+        this->particles.push_back(particle);
     }
+
+    // Bind the VAO
+    glBindVertexArray(this->VAO);
+
+    // Bind the VBO and EBO
+    glGenBuffers(1, &(this->VBO));
+    glGenBuffers(1, &(this->EBO));
+
+    // Bind the VBO and set the vertex data
+    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(Particle), &this->particles[0], GL_STATIC_DRAW);
+
+    // Setup the EBO
+    std::vector<GLuint> indices(this->nParticles * 6);
+    // The vertices for the quad are arranged as follows:
+    //
+    //   1---3
+    //   |   |
+    //   0---2
+    //
+    // Each quad consists of two triangles, with vertices 0, 1, and 2, and vertices 1, 3, and 2.
+
+    // Fill the indices vector
+    for (GLuint i = 0; i < this->nParticles; i++)
+    {
+        indices[i * 6 + 0] = i * 4 + 0;
+        indices[i * 6 + 1] = i * 4 + 1;
+        indices[i * 6 + 2] = i * 4 + 2;
+        indices[i * 6 + 3] = i * 4 + 1;
+        indices[i * 6 + 4] = i * 4 + 3;
+        indices[i * 6 + 5] = i * 4 + 2;
+    }
+
+    // Bind the EBO and set the vertex data
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->nParticles * 6 * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
+
+    // Set up the vertex attributes
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, position));
+    glEnableVertexAttribArray(0);
+    
+    // Texture coordinates
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, texCoords));
+    glEnableVertexAttribArray(1);
+
+    // Color
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, color));
+    glEnableVertexAttribArray(2);
+
+    // Size
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, size));
+    glEnableVertexAttribArray(3);
+
+    // Mass
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, mass));
+    glEnableVertexAttribArray(4);
+
+    // Velocity
+    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, velocity));
+    glEnableVertexAttribArray(5);
+
+    // Radius
+    glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)offsetof(Particle, radius));
+    glEnableVertexAttribArray(6);
+
+    // Unbind the VBO and VAO
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    // Load the sprite texture
+    getSpriteTexture();
+}
+
+void checkForErrors()
+{
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
+    {
+        std::cout << "OpenGL error: " << error << std::endl;
+    }
+}
 
 void Particles::Draw(Shader shader, Camera camera)
 {
@@ -114,21 +155,12 @@ void Particles::Draw(Shader shader, Camera camera)
         glm::vec3(1.0f) // scale
     );
 
-    // Draw the particles as circular points
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->spriteTexture);
-    shader.setInt("texture1", 0);
-
-    // glEnable(GL_POINT_SMOOTH);
-    glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-    glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-    glEnable(GL_POINT_SPRITE);
-    glEnable(GL_PROGRAM_POINT_SIZE);
-    glBindVertexArray(this->VAO);
-    glDrawArrays(GL_POINTS, 0, this->nParticles);
-    // glBindVertexArray(0);
-
-    // CAGAR PARA O GL_POINTS E DESENHAR O VAO DO SPRITE !!!!!!!!!!!!
+    glBindVertexArray(VAO);
+    for (unsigned int i = 0; i < this->nParticles; i++) {
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(i * 6 * sizeof(unsigned int)));
+    }
+    glBindVertexArray(0);
+    
 }
 
 // Get the sprite texture from the file
@@ -142,8 +174,8 @@ void Particles::getSpriteTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // Filtering parameters Tex2
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Load the image
     int width, height, nrChannels;

@@ -38,17 +38,6 @@
 Camera camera;
 CameraPos cameraPos;
 
-// Particle System global variables
-int nParticles = 1000;
-float minMass = 1.0f;
-float maxMass = 100.0f;
-float minRadius = 0.1f;
-float maxRadius = 1.5f;
-float minSize = 4.0f;
-float maxSize = 10.1f;
-float minSpeed = 0.0f;
-float maxSpeed = 0.0f;
-
 // =============================== Files ===========================================
 const char* cubePath = "Media/Objects/Cube_tex/cube_textured.obj";
 const char* skyboxPath = "Media/Skyboxes/skybox_galaxy/";
@@ -81,7 +70,17 @@ int main()
     //================================= Particles =====================================~
     
     // Create the particles
-    Particles particles(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize);
+    Particles particles(
+        1000, // Number of particles
+        1.0f, // Minimum mass of the particles
+        100.0f, // Maximum mass of the particles
+        0.1f, // Minimum radius of the particles
+        1.5f, // Maximum radius of the particles
+        0.0f, // Minimum speed of the particles
+        0.0f, // Maximum speed of the particles
+        4.0f, // Minimum size of the particles
+        10.1f // Maximum size of the particles
+    );
 	
 	//================================ Light ========================================
     // Default Light
