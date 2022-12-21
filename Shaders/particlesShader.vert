@@ -19,7 +19,7 @@ uniform mat4 view;
 
 void main() {
     pos = vertexPosition;
-    vSize = vertexSize / 10.0f;
+    vSize = vertexSize / 40.0f;
 
     // set the color of the particle
     color = vertexColor;
