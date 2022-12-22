@@ -24,9 +24,6 @@ void main() {
     // set the color of the particle
     color = vertexColor;
 
-    // set the size of the particle
-    // gl_PointSize = vertexSize;
-
     // transform the vertex position using the model-view and projection matrices
     gl_Position = view * model * vec4(vertexPosition, 1.0);
 }

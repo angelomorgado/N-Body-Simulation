@@ -16,7 +16,7 @@ float siu = 0.1;
 void main()
 {
     vColor = color[0];
-    float size = vSize[0];
+    float size = vSize[0] / 2;
     mat4 m = projection;
 
     // Bottom left

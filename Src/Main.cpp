@@ -48,9 +48,9 @@ Camera camera;
 CameraPos cameraPos;
 
 // =============================== Files ===========================================
-const char* cubePath = "Media/Objects/Cube_tex/cube_textured.obj";
+const char* cubePath   = "Media/Objects/Cube_tex/cube_textured.obj";
 const char* skyboxPath = "Media/Skyboxes/skybox_galaxy/";
-const char* alienPath = "Media/Objects/Alien/alien.obj";
+const char* alienPath  = "Media/Objects/Alien/alien.obj";
 
 int main()
 {
@@ -72,19 +72,19 @@ int main()
 
 	// Load the model
     Skybox skybox(skyboxPath);
-    Model cube(cubePath);
-    Model alien(alienPath);
-    alien.changeTexture("alien.png","Media/Objects/Alien");
+    // Model cube(cubePath);
+    // Model alien(alienPath);
+    // alien.changeTexture("alien.png","Media/Objects/Alien");
 
     //================================= Particles =====================================~
     
     // Create the particles
     Particles particles(
-        1000, // Number of particles
+        1000000, // Number of particles
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles
-        1.5f, // Maximum radius of the particles
+        5.5f, // Maximum radius of the particles
         0.0f, // Minimum speed of the particles
         0.0f, // Maximum speed of the particles
         0.2f, // Minimum size of the particles
@@ -133,7 +133,7 @@ int main()
         particles.Draw(particleShader, camera);
 		
         // Draw the Skybox 
-        // skybox.Draw(skyboxShader, camera);
+        skybox.Draw(skyboxShader, camera);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
