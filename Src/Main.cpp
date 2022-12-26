@@ -65,7 +65,7 @@ int main()
     //Shader based on the file
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
-    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    Shader particleShader("Shaders/particlesShader_glow.vert", "Shaders/particlesShader_glow.frag", "Shaders/particlesShader.geom");
     ComputeShader computeShader("Shaders/Compute/basic_shader.comp");
 
     //================================= Models ====================================================
@@ -80,11 +80,11 @@ int main()
     
     // Create the particles
     Particles particles(
-        1000000, // Number of particles
+        1000, // Number of particles
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles
-        5.5f, // Maximum radius of the particles
+        1.5f, // Maximum radius of the particles
         0.0f, // Minimum speed of the particles
         0.0f, // Maximum speed of the particles
         0.2f, // Minimum size of the particles

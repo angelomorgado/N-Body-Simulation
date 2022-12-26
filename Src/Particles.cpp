@@ -98,11 +98,11 @@ Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minR
         glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
         glBindVertexArray(0);
-
     }
 
 void Particles::Draw(Shader shader, Camera camera)
 {
+    // Enable the shader and set the view, projection, and model matrices
     shader.use();
     setView(&shader, camera.GetViewMatrix());
     setProjection(&shader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -114,21 +114,23 @@ void Particles::Draw(Shader shader, Camera camera)
         glm::vec3(1.0f) // scale
     );
 
-    // Draw the particles as circular points
+    // Bind the sprite texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->spriteTexture);
     shader.setInt("texture1", 0);
 
-    // glEnable(GL_POINT_SMOOTH);
-    // glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-    // glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-    // glEnable(GL_POINT_SPRITE);
+    // Enables
+    glEnable(GL_BLEND);
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
     glEnable(GL_PROGRAM_POINT_SIZE);
+
+    // Draw
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_POINTS, 0, this->nParticles);
-    // glBindVertexArray(0);
 
-    // CAGAR PARA O GL_POINTS E DESENHAR O VAO DO SPRITE !!!!!!!!!!!!
+    // Disables
+    glDisable(GL_BLEND);
 }
 
 // Get the sprite texture from the file
