@@ -120,9 +120,8 @@ void Particles::Draw(Shader shader, Camera camera)
     shader.setInt("texture1", 0);
 
     // Enables
-    glEnable(GL_BLEND);
+    // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
     // Draw
@@ -130,7 +129,7 @@ void Particles::Draw(Shader shader, Camera camera)
     glDrawArrays(GL_POINTS, 0, this->nParticles);
 
     // Disables
-    glDisable(GL_BLEND);
+    // glDisable(GL_BLEND);
 }
 
 // Get the sprite texture from the file

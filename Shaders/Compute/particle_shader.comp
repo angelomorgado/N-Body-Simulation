@@ -1,1 +1,38 @@
-#version 460 core
+#version 450 core
+
+layout (local_size_x = 100) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec3 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec3 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+// Uniforms
+uniform float deltaTime;
+
+// Functions
+vec3 computeForces(vec3 position, float mass)
+{
+    return vec3(0.0, -9.8, 0.0) * mass;        
+}
+
+void main()
+{ 
+    uint id = gl_GlobalInvocationID.x;
+    // change the color of the particle to red
+    vertexColor[id] = vec4(1.0, 0.0, 0.0, 1.0);
+}

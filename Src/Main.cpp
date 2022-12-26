@@ -65,8 +65,8 @@ int main()
     //Shader based on the file
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
-    Shader particleShader("Shaders/particlesShader_glow.vert", "Shaders/particlesShader_glow.frag", "Shaders/particlesShader.geom");
-    ComputeShader computeShader("Shaders/Compute/basic_shader.comp");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader computeShader("Shaders/Compute/particle_shader.comp");
 
     //================================= Models ====================================================
 
@@ -130,6 +130,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Draw the particles
+        computeShader.use();
+        computeShader.setFloat("deltaTime", camera.deltaTime);
+        computeShader.execute(1000 / 100, 1, 1);
         particles.Draw(particleShader, camera);
 		
         // Draw the Skybox 
