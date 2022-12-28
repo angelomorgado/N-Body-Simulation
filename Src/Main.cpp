@@ -81,6 +81,7 @@ int main()
     // Create the particles
     Particles particles(
         1000, // Number of particles
+        "Media/Textures/star.png", // Texture of the particles
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles

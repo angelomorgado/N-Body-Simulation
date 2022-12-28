@@ -1,10 +1,10 @@
 #include <Particles.h>
 
-Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+Particles::Particles(GLuint nParticles, std::string texture_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
 {
     generateValues(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize);
-    getSpriteTexture();
     transferDataToGPU();
+    texture = new Texture(texture_path);
 }
 
 void Particles::Draw(Shader shader, Camera camera)
@@ -22,14 +22,12 @@ void Particles::Draw(Shader shader, Camera camera)
     );
 
     // Bind the sprite texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->spriteTexture);
-    shader.setInt("texture1", 0);
+    texture->bind();
+    shader.setInt("texture1", texture->textureNumber);
 
     // Enables
     // glEnable(GL_BLEND);
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // Draw
     glBindVertexArray(this->VAO);
@@ -145,38 +143,4 @@ void Particles::transferDataToGPU()
     glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->masses[0], GL_DYNAMIC_DRAW);
 
     glBindVertexArray(0);
-}
-
-// Get the sprite texture from the file
-void Particles::getSpriteTexture()
-{
-    glGenTextures(1, &(this->spriteTexture)); // How many textures and where to store them
-    glBindTexture(GL_TEXTURE_2D, this->spriteTexture);
-
-    // Wrapping parameters Tex2
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    // Filtering parameters Tex2
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    //Flip the image horizontally
-    stbi_set_flip_vertically_on_load(true);
-
-    // Load the image
-    int width, height, nrChannels;
-    // TODO: FAZER ISTO NAO HARDCODED
-    unsigned char* data = stbi_load("Media/Textures/star.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-
-    stbi_image_free(data);
 }
