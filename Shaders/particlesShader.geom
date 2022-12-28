@@ -4,9 +4,9 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 out vec2 texCoord;
-out vec3 vColor;
+out vec4 vColor;
 
-in vec3 color[1];
+in vec4 color[1];
 in vec3 pos[1];
 in float vSize[1];
 

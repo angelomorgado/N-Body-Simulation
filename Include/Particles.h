@@ -47,7 +47,7 @@ private:
     std::vector<glm::vec3> velocities;
     std::vector<float> masses;
     std::vector<float> radiuses;
-    std::vector<glm::vec3> colors;
+    std::vector<glm::vec4> colors;
     std::vector<float> sizes;
     GLuint spriteTexture;
 

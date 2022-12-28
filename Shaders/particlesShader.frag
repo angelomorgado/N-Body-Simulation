@@ -1,7 +1,7 @@
 #version 460 core
 
 // input variables
-in vec3 vColor;
+in vec4 vColor;
 in vec2 texCoord;
 
 // output variable
@@ -14,5 +14,5 @@ void main() {
     if (tex.a < 0.1) {
         discard;
     }
-    fragColor = tex * vec4(vColor, 1.0);
+    fragColor = vColor * tex;
 }

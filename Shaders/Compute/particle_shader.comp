@@ -1,25 +1,25 @@
-#version 450 core
+#version 460 core
 
 layout (local_size_x = 100) in;
 
-layout(std430, binding = 0) buffer _vertexPosition {
-    vec3 vertexPosition[];
-};
-layout(std430, binding = 1) buffer _vertexSize{
-    float vertexSize[];
-};
-layout(std430, binding = 2) buffer _vertexRadius{
-    float vertexRadius[];
-};
+// layout(std430, binding = 0) buffer _vertexPosition {
+//     vec3 vertexPosition[];
+// };
+// layout(std430, binding = 1) buffer _vertexSize{
+//     float vertexSize[];
+// };
+// layout(std430, binding = 2) buffer _vertexRadius{
+//     float vertexRadius[];
+// };
 layout(binding = 3, std430) buffer _vertexColor{
     vec4 vertexColor[];
 };
-layout(std430, binding = 4) buffer _vertexVelocity{
-    vec3 vertexVelocity[];
-};
-layout(std430, binding = 5) buffer _vertexMass{
-    float vertexMass[];
-};
+// layout(std430, binding = 4) buffer _vertexVelocity{
+//     vec3 vertexVelocity[];
+// };
+// layout(std430, binding = 5) buffer _vertexMass{
+//     float vertexMass[];
+// };
 
 // Uniforms
 uniform float deltaTime;
