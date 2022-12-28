@@ -33,8 +33,8 @@ vec3 computeForces(vec3 position, float mass)
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
-    // change the color of the particle to red
-    vertexColor[id] = vec4(1.0, 0.0, 0.0, 1.0);
+    // change the color of the particle to a random color
+    vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
     
     // Move the particle
     vec3 forces = computeForces(vertexPosition[id], 1.0);
