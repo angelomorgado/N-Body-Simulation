@@ -65,4 +65,6 @@ private:
 
     // Functions
     void getSpriteTexture();
+    void generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
+    void transferDataToGPU();
 };

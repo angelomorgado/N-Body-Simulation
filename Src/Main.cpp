@@ -71,7 +71,7 @@ int main()
     //================================= Models ====================================================
 
 	// Load the model
-    //Skybox skybox(skyboxPath);
+    Skybox skybox(skyboxPath);
     // Model cube(cubePath);
     // Model alien(alienPath);
     // alien.changeTexture("alien.png","Media/Objects/Alien");
@@ -136,7 +136,7 @@ int main()
         particles.Draw(particleShader, camera);
 		
         // Draw the Skybox 
-        //skybox.Draw(skyboxShader, camera);
+        skybox.Draw(skyboxShader, camera);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);

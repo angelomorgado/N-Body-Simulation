@@ -30,13 +30,23 @@ vec3 computeForces(vec3 position, float mass)
     return vec3(0.0, -9.8, 0.0) * mass;        
 }
 
+float get_centripetal_acceleration(vec3 velocity, float radius)
+{
+    float centripetal_acceleration = pow(length(velocity), 2.0) / radius;
+    return centripetal_acceleration;
+}
+
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
     // change the color of the particle to a random color
     vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
     
-    // Move the particle
+    // Move the particle in circles using the radius and the position
     vec3 forces = computeForces(vertexPosition[id], 1.0);
-    vertexPosition[id] += sin(vertexPosition[id].x) * forces * deltaTime;
+    // float centripetal_acceleration = get_centripetal_acceleration(vertexVelocity[id], vertexRadius[id]);
+    // vec3 centripetal_force = normalize(vertexVelocity[id]) * centripetal_acceleration;
+    // vec3 acceleration = (forces - centripetal_force) / vertexMass[id];
+    // vertexVelocity[id] += acceleration * deltaTime;
+    vertexPosition[id] += forces * deltaTime;
 }
