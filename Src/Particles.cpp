@@ -64,22 +64,24 @@ Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minR
         
         // Position
         glBindBuffer(GL_ARRAY_BUFFER, this->positionBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions[0], GL_DYNAMIC_DRAW);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, this->positionBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions[0], GL_DYNAMIC_DRAW);
         
-
         // Size
         glBindBuffer(GL_ARRAY_BUFFER, this->sizeBuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->sizes[0], GL_DYNAMIC_DRAW);
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, this->sizeBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->sizes[0], GL_DYNAMIC_DRAW);
         
         // Radius
-        // glBindBuffer(GL_ARRAY_BUFFER, this->radiusBuffer);
-        // glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->radiuses[0], GL_DYNAMIC_DRAW);
-        // glEnableVertexAttribArray(2);
-        // glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, this->radiusBuffer);
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, this->radiusBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->radiuses[0], GL_DYNAMIC_DRAW);
 
         // Color
         glBindBuffer(GL_ARRAY_BUFFER, this->colorBuffer);
@@ -89,16 +91,18 @@ Particles::Particles(GLuint nParticles, float minMass, float maxMass, float minR
         glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->colors[0], GL_DYNAMIC_DRAW);
 
         // Velocity
-        // glBindBuffer(GL_ARRAY_BUFFER, this->velocityBuffer);
-        // glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->velocities[0], GL_DYNAMIC_DRAW);
-        // glEnableVertexAttribArray(4);
-        // glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, this->velocityBuffer);
+        glEnableVertexAttribArray(4);
+        glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, this->velocityBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->velocities[0], GL_DYNAMIC_DRAW);
 
         // Mass
-        // glBindBuffer(GL_ARRAY_BUFFER, this->massBuffer);
-        // glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->masses[0], GL_DYNAMIC_DRAW);
-        // glEnableVertexAttribArray(5);
-        // glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBuffer(GL_ARRAY_BUFFER, this->massBuffer);
+        glEnableVertexAttribArray(5);
+        glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, this->massBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->masses[0], GL_DYNAMIC_DRAW);
 
         glBindVertexArray(0);
     }
