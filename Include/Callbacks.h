@@ -48,22 +48,22 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 }
 
 // This callback function can't be used for things like movement because it doesn't work while pressing
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     // Leave the program
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-	// Keybinds
-	if (key == GLFW_KEY_P && action == GLFW_PRESS)
-	{
+    // Keybinds
+    if (key == GLFW_KEY_P && action == GLFW_PRESS)
+    {
         wireframe = !wireframe;
 
         if (wireframe)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly

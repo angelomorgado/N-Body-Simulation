@@ -48,15 +48,15 @@ void Particles::Draw(Shader shader, Camera camera)
 void Particles::groupValues()
 {
     float probA = 0.85, probB = 0.1, probC = 0.05;
-    for(int i = 0; i < nParticles; i++)
+    for (GLuint i = 0; i < nParticles; i++)
     {
         ParticleType type;
 
-        if(i < nParticles * probA)
+        if (i < nParticles * probA)
         {
             type = getParticleA();
         }
-        else if(i < nParticles * (1 - probC))
+        else if (i < nParticles * (1 - probC))
         {
             type = getParticleB();
         }

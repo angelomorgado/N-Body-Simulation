@@ -2,7 +2,7 @@
 
 CC	= g++
 INCLDIR	= Include/
-BINDIR	= .
+BINDIR	= bin/
 SRCDIR	= Src/
 
 _BIN	= a.out
