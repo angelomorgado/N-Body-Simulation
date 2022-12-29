@@ -62,7 +62,7 @@ void main()
         vec3 Gforce = getGravitationalForce(r, d, vertexMass[i], vertexMass[id]);
 
         // Calculate the gravitational force
-        Fe = Gforce;
+        Fe += Gforce;
     }
 
 
@@ -72,5 +72,5 @@ void main()
     vertexVelocity[id] += a * deltaTime;
 
     // Calculate the new position
-    vertexPosition[id] += vertexVelocity[id] * deltaTime;
+    vertexPosition[id] += vertexVelocity[id] * deltaTime / 100.0;
 }
