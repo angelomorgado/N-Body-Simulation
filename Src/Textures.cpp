@@ -31,6 +31,8 @@ void Texture::loadTexture() {
     glActiveTexture(textureNumber);
     glBindTexture(GL_TEXTURE_2D, id);
 
+    stbi_set_flip_vertically_on_load(true);
+
     // Wrapping parameters Tex1
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);	// set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);

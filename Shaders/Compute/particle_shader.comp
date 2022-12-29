@@ -1,6 +1,6 @@
 #version 460 core
 
-layout (local_size_x = 100) in;
+layout (local_size_x = 64) in;
 
 layout(std430, binding = 0) buffer _vertexPosition {
     vec3 vertexPosition[];
@@ -40,7 +40,7 @@ void main()
 { 
     uint id = gl_GlobalInvocationID.x;
     // change the color of the particle to a random color
-    vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
+    // vertexColor[id] = vec4(1.0, 0.0, 0.0, 1.0);
     
     // Move the particle in circles using the radius and the position
     vec3 forces = computeForces(vertexPosition[id], 1.0);
@@ -48,5 +48,7 @@ void main()
     // vec3 centripetal_force = normalize(vertexVelocity[id]) * centripetal_acceleration;
     // vec3 acceleration = (forces - centripetal_force) / vertexMass[id];
     // vertexVelocity[id] += acceleration * deltaTime;
-    vertexPosition[id] += forces * deltaTime;
+    // vertexPosition[id] += forces * deltaTime;
+
+    // vertexSize[id] = sin(vertexPosition[id].y) * 0.5 + 0.5;
 }

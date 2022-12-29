@@ -43,14 +43,13 @@ void checkForErrors()
     }
 }
 
-// ============================= Global variables ==================================
 Camera camera;
 CameraPos cameraPos;
 
-// =============================== Files ===========================================
-const char* cubePath   = "Media/Objects/Cube_tex/cube_textured.obj";
-const char* skyboxPath = "Media/Skyboxes/skybox_galaxy/";
-const char* alienPath  = "Media/Objects/Alien/alien.obj";
+// =============================== Global Variables =======================================
+#define N_PARTICLES 1024 // Number of particles
+#define PARTICLE_TEXTURE_PATH "Media/Textures/star.png" // Texture of the particles
+#define SKYBOX_PATH "Media/Skyboxes/skybox_galaxy/" // Texture to the skybox
 
 int main()
 {
@@ -71,25 +70,14 @@ int main()
     //================================= Models ====================================================
 
 	// Load the model
-    Skybox skybox(skyboxPath);
-    // Model cube(cubePath);
-    // Model alien(alienPath);
-    // alien.changeTexture("alien.png","Media/Objects/Alien");
+    Skybox skybox(SKYBOX_PATH);
 
-    //================================= Particles =====================================~
+    //================================= Particles =====================================
     
     // Create the particles
     Particles particles(
-        1000, // Number of particles
-        "Media/Textures/star.png", // Texture of the particles
-        1.0f, // Minimum mass of the particles
-        100.0f, // Maximum mass of the particles
-        0.1f, // Minimum radius of the particles
-        1.5f, // Maximum radius of the particles
-        0.0f, // Minimum speed of the particles
-        0.0f, // Maximum speed of the particles
-        0.2f, // Minimum size of the particles
-        0.8f // Maximum size of the particles
+        N_PARTICLES, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
     );
 	
 	//================================ Light ========================================
@@ -133,7 +121,7 @@ int main()
         // Draw the particles
         computeShader.use();
         computeShader.setFloat("deltaTime", camera.deltaTime);
-        computeShader.execute(1000 / 100, 1, 1);
+        computeShader.execute(N_PARTICLES / 64);
         particles.Draw(particleShader, camera);
 		
         // Draw the Skybox 

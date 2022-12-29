@@ -7,6 +7,14 @@ Particles::Particles(GLuint nParticles, std::string texture_path, float minMass,
     texture = new Texture(texture_path);
 }
 
+Particles::Particles(GLuint nParticles, std::string texture_path)
+{
+    this->nParticles = nParticles;
+    groupValues();
+    transferDataToGPU();
+    texture = new Texture(texture_path);
+}
+
 void Particles::Draw(Shader shader, Camera camera)
 {
     // Enable the shader and set the view, projection, and model matrices
@@ -35,6 +43,35 @@ void Particles::Draw(Shader shader, Camera camera)
 
     // Disables
     // glDisable(GL_BLEND);
+}
+
+void Particles::groupValues()
+{
+    float probA = 0.85, probB = 0.1, probC = 0.05;
+    for(int i = 0; i < nParticles; i++)
+    {
+        ParticleType type;
+
+        if(i < nParticles * probA)
+        {
+            type = getParticleA();
+        }
+        else if(i < nParticles * (1 - probC))
+        {
+            type = getParticleB();
+        }
+        else
+        {
+            type = getParticleC();
+        }
+
+        this->positions.push_back(type.position);
+        this->radiuses.push_back(type.radius);
+        this->velocities.push_back(type.velocity);
+        this->masses.push_back(type.mass);
+        this->sizes.push_back(type.size);
+        this->colors.push_back(type.color);
+    }
 }
 
 void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
