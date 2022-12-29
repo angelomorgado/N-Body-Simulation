@@ -4,6 +4,7 @@
 #define PARTICLE_TYPE_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 struct ParticleType
 {
@@ -39,5 +40,8 @@ struct ParticleType
 ParticleType getParticleA();
 ParticleType getParticleB();
 ParticleType getParticleC();
+
+glm::vec3 createPosition(float radius);
+glm::vec3 createVelocity(float minVelocity, float maxVelocity);
 
 #endif

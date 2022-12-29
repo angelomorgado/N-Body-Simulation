@@ -50,5 +50,5 @@ void main()
     // vertexVelocity[id] += acceleration * deltaTime;
     // vertexPosition[id] += forces * deltaTime;
 
-    // vertexSize[id] = sin(vertexPosition[id].y) * 0.5 + 0.5;
+    // 
 }
