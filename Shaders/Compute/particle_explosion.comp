@@ -1,0 +1,58 @@
+#version 460 core
+
+layout (local_size_x = 64) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec3 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec3 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+// Uniforms
+uniform float deltaTime;
+
+// Get the force of an explosion
+vec3 getExplosionForce(vec3 position, vec3 velocity, float mass, float radius, float size, vec3 explosionPosition, float explosionForce)
+{
+    // Get the distance to the explosion
+    vec3 distance = position - explosionPosition;
+
+    // Get the distance to the explosion
+    float distanceLength = length(distance);
+
+    // Get the force
+    float force = (explosionForce * mass) / (distanceLength * distanceLength);
+
+    // Get the force vector
+    vec3 forceVector = normalize(distance) * force;
+
+    // Return the force vector
+    return forceVector;
+}
+
+void main()
+{
+    uint id = gl_GlobalInvocationID.x;
+
+    // Compute the acceleration
+    vec3 acceleration = getExplosionForce(vertexPosition[id], vertexVelocity[id], vertexMass[id], vertexRadius[id], vertexSize[id], vec3(0.0, 0.0, 0.0), 10.0) / vertexMass[id];
+
+    // Compute the velocity
+    vertexVelocity[id] += acceleration;
+
+    // Compute the position
+    vertexPosition[id] += vertexVelocity[id] * deltaTime / 1000.0;
+}
