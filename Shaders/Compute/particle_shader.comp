@@ -24,31 +24,53 @@ layout(std430, binding = 5) buffer _vertexMass{
 // Uniforms
 uniform float deltaTime;
 
-// Functions
-vec3 computeForces(vec3 position, float mass)
-{
-    return vec3(0.0, -9.8, 0.0) * mass;        
-}
+// Constants
+const float G = 6.67408e-11;
 
-float get_centripetal_acceleration(vec3 velocity, float radius)
+// Functions
+vec3 getGravitationalForce(vec3 r, float d, float m1, float m2)
 {
-    float centripetal_acceleration = pow(length(velocity), 2.0) / radius;
-    return centripetal_acceleration;
+    r = normalize(r);
+    // float d = length(r);
+
+    // Calculate the gravitational force
+    vec3 Gforce = vec3(0.0, 0.0, 0.0);
+
+    Gforce.x = -G * m1 * m2 / (d * d) * r.x;
+    Gforce.y = -G * m1 * m2 / (d * d) * r.y;
+    Gforce.z = -G * m1 * m2 / (d * d) * r.z;
+
+    return Gforce;
 }
 
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
-    // change the color of the particle to a random color
-    // vertexColor[id] = vec4(1.0, 0.0, 0.0, 1.0);
     
-    // Move the particle in circles using the radius and the position
-    vec3 forces = computeForces(vertexPosition[id], 1.0);
-    // float centripetal_acceleration = get_centripetal_acceleration(vertexVelocity[id], vertexRadius[id]);
-    // vec3 centripetal_force = normalize(vertexVelocity[id]) * centripetal_acceleration;
-    // vec3 acceleration = (forces - centripetal_force) / vertexMass[id];
-    // vertexVelocity[id] += acceleration * deltaTime;
-    // vertexPosition[id] += forces * deltaTime;
+    vec3 Fe = vec3(0.0, 0.0, 0.0);
 
-    // 
+    for(int i = 0; i < vertexPosition.length(); i++)
+    {
+        if (id == i)
+        {
+            continue;
+        }
+        // Get the distance between the two particles using euclidean distance
+        vec3 r = vertexPosition[i] - vertexPosition[id];
+        float d = sqrt(r.x * r.x + r.y * r.y + r.z * r.z);
+
+        vec3 Gforce = getGravitationalForce(r, d, vertexMass[i], vertexMass[id]);
+
+        // Calculate the gravitational force
+        Fe = Gforce;
+    }
+
+
+    vec3 a = Fe / vertexMass[id];
+
+    // Calculate the new velocity
+    vertexVelocity[id] += a * deltaTime;
+
+    // Calculate the new position
+    vertexPosition[id] += vertexVelocity[id] * deltaTime;
 }
