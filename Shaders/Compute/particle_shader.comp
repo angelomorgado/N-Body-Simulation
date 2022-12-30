@@ -3,7 +3,7 @@
 layout (local_size_x = 64) in;
 
 layout(std430, binding = 0) buffer _vertexPosition {
-    vec3 vertexPosition[];
+    vec4 vertexPosition[];
 };
 layout(std430, binding = 1) buffer _vertexSize{
     float vertexSize[];
@@ -15,7 +15,7 @@ layout(binding = 3, std430) buffer _vertexColor{
     vec4 vertexColor[];
 };
 layout(std430, binding = 4) buffer _vertexVelocity{
-    vec3 vertexVelocity[];
+    vec4 vertexVelocity[];
 };
 layout(std430, binding = 5) buffer _vertexMass{
     float vertexMass[];
@@ -28,13 +28,13 @@ uniform float deltaTime;
 const float G = 6.67408e-11;
 
 // Functions
-vec3 getGravitationalForce(vec3 r, float d, float m1, float m2)
+vec4 getGravitationalForce(vec4 r, float d, float m1, float m2)
 {
     r = normalize(r);
     // float d = length(r);
 
     // Calculate the gravitational force
-    vec3 Gforce = vec3(0.0, 0.0, 0.0);
+    vec4 Gforce = vec4(0.0, 0.0, 0.0, 0.0);
 
     Gforce.x = -G * m1 * m2 / (d * d) * r.x;
     Gforce.y = -G * m1 * m2 / (d * d) * r.y;
@@ -47,7 +47,7 @@ void main()
 { 
     uint id = gl_GlobalInvocationID.x;
     
-    vec3 Fe = vec3(0.0, 0.0, 0.0);
+    vec4 Fe = vec4(0.0, 0.0, 0.0, 0.0);
 
     for(int i = 0; i < vertexPosition.length(); i++)
     {
@@ -55,22 +55,22 @@ void main()
         {
             continue;
         }
-        // Get the distance between the two particles using euclidean distance
-        vec3 r = vertexPosition[i] - vertexPosition[id];
-        float d = sqrt(r.x * r.x + r.y * r.y + r.z * r.z);
 
-        vec3 Gforce = getGravitationalForce(r, d, vertexMass[i], vertexMass[id]);
+        vec4 r = vertexPosition[i] - vertexPosition[id];
+
+        float d = length(r);
+
+        vec4 Gforce = getGravitationalForce(r, d, vertexMass[i], vertexMass[id]);
 
         // Calculate the gravitational force
         Fe += Gforce;
     }
 
-
-    vec3 a = Fe / vertexMass[id];
+    vec4 a = Fe / vertexMass[id];
 
     // Calculate the new velocity
     vertexVelocity[id] += a * deltaTime;
 
     // Calculate the new position
-    vertexPosition[id] += vertexVelocity[id] * deltaTime / 100.0;
+    vertexPosition[id] += vertexVelocity[id] * deltaTime / 10.0;
 }
