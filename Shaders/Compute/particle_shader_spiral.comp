@@ -1,0 +1,51 @@
+#version 460 core
+
+layout (local_size_x = 64) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec4 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec4 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+// #-------------Spiral Motion------------#
+
+// Uniforms
+
+uniform float a = 4.0;
+uniform float b = 4.0;
+
+void spiral(uint id)
+{
+   float angle = atan(vertexPosition[id].y, vertexPosition[id].x) + vertexVelocity[id].x * 3.14 / 180;
+
+   vec4 newPosition = vec4(a*cos(angle), b*sin(angle),vertexPosition[id].z, vertexPosition[id].w);
+
+   vertexPosition[id] = newPosition;
+   vertexVelocity[id] = vertexVelocity[id] + vec4(0.0001/8,0.0001/8,0.0,0.0);
+}
+
+// #--------------------------------------#
+
+void main()
+{ 
+    uint id = gl_GlobalInvocationID.x;
+    // change the color of the particle to a random color
+    vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
+
+    // Spiral Motion Implementation
+    spiral(id);
+}
