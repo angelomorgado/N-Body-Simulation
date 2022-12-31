@@ -43,6 +43,11 @@ vec4 getGravitationalForce(vec4 r, float d, float m1, float m2)
     return Gforce;
 }
 
+float random(vec2 st)
+{
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
@@ -72,5 +77,5 @@ void main()
     vertexVelocity[id] += a * deltaTime;
 
     // Calculate the new position
-    vertexPosition[id] += vertexVelocity[id] * deltaTime / 10.0;
+    vertexPosition[id] += vertexVelocity[id] * deltaTime;
 }
