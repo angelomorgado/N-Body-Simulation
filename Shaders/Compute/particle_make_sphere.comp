@@ -1,0 +1,72 @@
+#version 460 core
+
+layout (local_size_x = 64) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec4 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec4 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+// Uniforms
+uniform float deltaTime;
+
+// Constants
+const float G = 6.67408e-11;
+
+// Functions
+vec4 getGravitationalForce(vec4 r, float d, float m1, float m2)
+{
+    r = normalize(r);
+    // float d = length(r);
+
+    // Calculate the gravitational force
+    vec4 Gforce = vec4(0.0, 0.0, 0.0, 0.0);
+
+    Gforce.x = -G * m1 * m2 / (d * d) * r.x;
+    Gforce.y = -G * m1 * m2 / (d * d) * r.y;
+    Gforce.z = -G * m1 * m2 / (d * d) * r.z;
+
+    return Gforce;
+}
+
+float random(vec2 st)
+{
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+void main()
+{ 
+    uint id = gl_GlobalInvocationID.x;
+    
+    float radius = vertexRadius[id];
+
+    float theta = 2.0 * acos(-1) * random(vec2(id, radius));
+    float phi = 0.5 - acos(-1) * random(vec2(radius, id));
+
+    float x = radius * sin(phi) * cos(theta);
+    float y = radius * sin(phi) * sin(theta);
+    float z = radius * cos(phi);
+
+    vec4 pos = vec4(x, y, z, 0.001);
+
+    // Move the particle bit by bit in the direction of the center of the world
+    vec4 r = vec4(pos.x, pos.y, pos.z, 0.0) - vertexPosition[id];
+    vertexVelocity[id] = r * deltaTime * 100.0;
+
+    // Calculate the new position
+    vertexPosition[id] += vertexVelocity[id] * deltaTime;
+}
