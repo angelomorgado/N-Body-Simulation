@@ -23,10 +23,9 @@ layout(std430, binding = 5) buffer _vertexMass{
 
 // #-------------Spiral Motion------------#
 
-// Uniforms
-
-uniform float a = 4.0;
-uniform float b = 4.0;
+uniform float deltaTime;
+float a = 4.0;
+float b = 4.0;
 
 void spiral(uint id)
 {
@@ -35,7 +34,6 @@ void spiral(uint id)
    vec4 newPosition = vec4(a*cos(angle), b*sin(angle),vertexPosition[id].z, vertexPosition[id].w);
 
    vertexPosition[id] = newPosition;
-   vertexVelocity[id] = vertexVelocity[id] + vec4(0.0001/8,0.0001/8,0.0,0.0);
 }
 
 // #--------------------------------------#
