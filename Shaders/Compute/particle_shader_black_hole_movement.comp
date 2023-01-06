@@ -1,0 +1,70 @@
+#version 460 core
+
+layout (local_size_x = 64) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec4 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec4 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+// #-------------Black Holes Motion------------#
+
+// Uniforms
+uniform vec4 first_black_hole_position;
+uniform vec4 second_black_hole_position;
+uniform float first_g_force;
+uniform float second_g_force;
+
+float deltaT = 0.005;
+float max_distance = 200.0;
+
+void black_hole(uint id, vec4 black_hole_position, vec4 second_black_hole_position)
+{
+    // Force from first black hole
+    vec4 force = vec4(0.0);
+    vec4 dist = first_black_hole_position - vertexPosition[id];
+    force = (first_g_force / length(dist)) * normalize(dist);
+
+    // Force from second black hole
+    dist = second_black_hole_position - vertexPosition[id];
+    force += (second_g_force / length(dist)) * normalize(dist);
+
+    // Reset particles that go to far away from the black hole (attraction point)
+    if(length(dist) > max_distance)
+    {
+        vertexPosition[id] = vec4(0.0,0.0,0.0,0.0);
+    }
+    else
+    {
+        vec4 acceleration = force * 1.0/vertexMass[id];
+        vertexPosition[id] = vec4(vertexPosition[id] + (vertexVelocity[id] * deltaT) + (0.5 * acceleration * dot(deltaT,deltaT)));
+        vertexVelocity[id] = vec4(vertexVelocity[id] + (acceleration * deltaT));
+    }
+}
+
+// #--------------------------------------#
+
+void main()
+{ 
+    uint id = gl_GlobalInvocationID.x;
+    
+    // change the color of the particle to a random color
+    vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
+
+    // black holes motions
+    black_hole(id,vec4(0.0), vec4(7.0,7.0,7.0,0.0));
+}
