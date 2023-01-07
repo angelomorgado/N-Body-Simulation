@@ -27,17 +27,6 @@ uniform float deltaTime;
 // Constants
 const float G = 6.67408e-11;
 
-// Functions
-// vec4 getGravitationalForce(vec4 r, float m1, float m2)
-// {
-//     float d = length(r);
-//     r = normalize(r);
-
-//     // Calculate the gravitational force
-//     vec4 Gforce = G * m1 * m2 / (d * d) * r;
-
-//     return Gforce;
-// }
 
 vec3 getGravitationalForce(vec3 r, float m1, float m2)
 {
