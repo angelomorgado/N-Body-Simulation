@@ -3,7 +3,7 @@
 ParticleType getParticleA()
 {
     float minRadius = 0.1f;
-    float maxRadius = 1.5f;
+    float maxRadius = 4.5f;
     float minMass = 1.0f;
     float maxMass = 2.0f;
     float minVelocity = 3.0f;
@@ -35,7 +35,7 @@ ParticleType getParticleA()
 ParticleType getParticleB()
 {
     float minRadius = 0.1f;
-    float maxRadius = 1.5f;
+    float maxRadius = 4.5f;
     float minMass = 5.0f;
     float maxMass = 10.0f;
     float minVelocity = 2.0f;
@@ -67,9 +67,9 @@ ParticleType getParticleB()
 ParticleType getParticleC()
 {
     float minRadius = 0.1f;
-    float maxRadius = 1.5f;
-    float minMass = 20.0f;
-    float maxMass = 25.0f;
+    float maxRadius = 4.5f;
+    float minMass = 20.0f * 1000.0f;
+    float maxMass = 25.0f * 1000.0f;
     float minVelocity = 1.0f;
     float maxVelocity = 3.0f;
     float minSize = 2.0f;
