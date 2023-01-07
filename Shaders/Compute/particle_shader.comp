@@ -28,13 +28,25 @@ uniform float deltaTime;
 const float G = 6.67408e-11;
 
 // Functions
-vec4 getGravitationalForce(vec4 r, float m1, float m2)
+// vec4 getGravitationalForce(vec4 r, float m1, float m2)
+// {
+//     float d = length(r);
+//     r = normalize(r);
+
+//     // Calculate the gravitational force
+//     vec4 Gforce = G * m1 * m2 / (d * d) * r;
+
+//     return Gforce;
+// }
+
+vec3 getGravitationalForce(vec3 r, float m1, float m2)
 {
     float d = length(r);
-    r = normalize(r);
+    float inv_d = 1.0 / d;
+    r *= inv_d ;
 
     // Calculate the gravitational force
-    vec4 Gforce = G * m1 * m2 / (d * d) * r;
+    vec3 Gforce = (G * m1 * m2) * ( inv_d * inv_d ) * r;
 
     return Gforce;
 }
@@ -58,12 +70,13 @@ void main()
             continue;
         }
         
-        vec4 r = vertexPosition[i] - vertexPosition[id];
+        vec3 r = vertexPosition[i].xyz - vertexPosition[id].xyz;
 
-        vec4 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
+        // vec4 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
+        vec3 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
 
         // Calculate the gravitational force
-        Fe += Gforce;
+        Fe += vec4(Gforce,1.0);
     }   
 
     // Calculate the new velocity
