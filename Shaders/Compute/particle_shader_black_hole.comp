@@ -28,7 +28,7 @@ float max_distance = 30.0;
 
 void black_hole(uint id, vec4 black_hole_position)
 {
-    // Force from first black hole
+    // Force from black hole
     vec4 force = vec4(0.0);
     vec4 dist = black_hole_position - vertexPosition[id];
     force = (gravity / length(dist)) * normalize(dist);
@@ -38,6 +38,7 @@ void black_hole(uint id, vec4 black_hole_position)
     {
         vertexPosition[id] = vec4(0.0,0.0,0.0,0.0);
     }
+    // Apply the gravitacional force to each particle
     else
     {
         vec4 acceleration = force * 1.0/vertexMass[id];
@@ -46,6 +47,7 @@ void black_hole(uint id, vec4 black_hole_position)
     }
 }
 // #-----------------------------------#
+
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;

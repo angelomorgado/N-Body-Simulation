@@ -29,10 +29,10 @@ uniform vec4 second_black_hole_position;
 uniform float first_g_force;
 uniform float second_g_force;
 
-float deltaT = 0.005;
-float max_distance = 200.0;
+float deltaT = 0.0009;
+float max_distance = 50.0;
 
-void black_hole(uint id, vec4 black_hole_position, vec4 second_black_hole_position)
+void black_hole(uint id)
 {
     // Force from first black hole
     vec4 force = vec4(0.0);
@@ -66,5 +66,5 @@ void main()
     vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
 
     // black holes motions
-    black_hole(id,vec4(0.0), vec4(7.0,7.0,7.0,0.0));
+    black_hole(id);
 }
