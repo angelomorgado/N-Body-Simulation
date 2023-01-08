@@ -22,16 +22,18 @@ layout(std430, binding = 5) buffer _vertexMass{
 };
 
 // #-------------Black Hole------------#
-float gravity = 1000.0; 
-float deltaT = 0.0007;
 float max_distance = 30.0;
 
-void black_hole(uint id, vec4 black_hole_position)
+uniform vec3 black_hole_position;
+uniform float black_hole_force;
+uniform float deltaT;
+
+void black_hole(uint id)
 {
     // Force from black hole
     vec4 force = vec4(0.0);
-    vec4 dist = black_hole_position - vertexPosition[id];
-    force = (gravity / length(dist)) * normalize(dist);
+    vec4 dist = vec4(black_hole_position,1.0) - vertexPosition[id];
+    force = (black_hole_force / length(dist)) * normalize(dist);
 
     // Reset particles that go to far away from the black hole (attraction point)
     if(length(dist) > max_distance)

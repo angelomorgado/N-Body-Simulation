@@ -24,23 +24,23 @@ layout(std430, binding = 5) buffer _vertexMass{
 // #-------------Black Holes Motion------------#
 
 // Uniforms
-uniform vec4 first_black_hole_position;
-uniform vec4 second_black_hole_position;
+uniform vec3 first_black_hole_position;
+uniform vec3 second_black_hole_position;
 uniform float first_g_force;
 uniform float second_g_force;
+uniform float deltaT;
 
-float deltaT = 0.0009;
 float max_distance = 50.0;
 
 void black_hole(uint id)
 {
     // Force from first black hole
     vec4 force = vec4(0.0);
-    vec4 dist = first_black_hole_position - vertexPosition[id];
+    vec4 dist = vec4(first_black_hole_position,1.0) - vertexPosition[id];
     force = (first_g_force / length(dist)) * normalize(dist);
 
     // Force from second black hole
-    dist = second_black_hole_position - vertexPosition[id];
+    dist = vec4(second_black_hole_position,1.0) - vertexPosition[id];
     force += (second_g_force / length(dist)) * normalize(dist);
 
     // Reset particles that go to far away from the black hole (attraction point)
