@@ -36,7 +36,7 @@ void black_hole(uint id, vec4 black_hole_position)
     // Reset particles that go to far away from the black hole (attraction point)
     if(length(dist) > max_distance)
     {
-        vertexPosition[id] = vec4(0.0,0.0,0.0,0.0);
+        vertexPosition[id] = vec4(0.0,0.0,0.0,1.0);
     }
     // Apply the gravitacional force to each particle
     else
