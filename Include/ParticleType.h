@@ -42,6 +42,5 @@ ParticleType getParticleB();
 ParticleType getParticleC();
 
 glm::vec4 createPosition(float radius);
-glm::vec4 createVelocity(float minVelocity, float maxVelocity);
 
 #endif

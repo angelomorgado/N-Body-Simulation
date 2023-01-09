@@ -25,27 +25,27 @@ layout(std430, binding = 5) buffer _vertexMass{
 float max_distance = 30.0;
 float deltaTime = 0.0005;
 
-uniform vec3 black_hole_position;
-uniform float black_hole_force;
+uniform float first_g_force;
 
 void black_hole(uint id)
 {
     // Force from black hole
-    vec4 force = vec4(0.0);
-    vec4 dist = vec4(black_hole_position,1.0) - vertexPosition[id];
-    force = (black_hole_force / length(dist)) * normalize(dist);
+    vec3 force = vec3(0.0);
+    vec3 dist = vec3(0.0) - vertexPosition[id].xyz;
+    force = (first_g_force / length(dist)) * normalize(dist);
 
     // Reset particles that go to far away from the black hole (attraction point)
     if(length(dist) > max_distance)
     {
-        vertexPosition[id] = vec4(0.0,0.0,0.0,1.0);
+        vertexPosition[id].xyz = vec3(0.0,0.0,0.0);
     }
+
     // Apply the gravitacional force to each particle
     else
     {
-        vec4 acceleration = force * 1.0/vertexMass[id];
-        vertexPosition[id] = vec4(vertexPosition[id] + (vertexVelocity[id] * deltaTime) + (0.5 * acceleration * dot(deltaTime,deltaTime)));
-        vertexVelocity[id] = vec4(vertexVelocity[id] + (acceleration * deltaTime));
+        vec3 acceleration = force * 1.0/vertexMass[id];
+        vertexPosition[id].xyz = vec3(vertexPosition[id].xyz + (vertexVelocity[id].xyz * deltaTime) + (0.5 * acceleration * dot(deltaTime,deltaTime)));
+        vertexVelocity[id].xyz = vec3(vertexVelocity[id].xyz + (acceleration * deltaTime));
     }
 }
 // #-----------------------------------#
@@ -57,5 +57,5 @@ void main()
     vertexColor[id] = vec4(sin(vertexPosition[id].x), cos(vertexPosition[id].y), sin(vertexPosition[id].z), 1.0);
 
     // Black Hole Implementation
-    black_hole(id, vec4(0.0,0.0,0.0,0.0));
+    black_hole(id);
 }
