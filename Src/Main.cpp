@@ -65,7 +65,7 @@ int main()
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
     Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
-    ComputeShader computeShader("Shaders/Compute/particle_shader_black_hole.comp");
+    ComputeShader computeShader("Shaders/Compute/particle_explosion.comp");
 
     //================================= Models ====================================================
 	// Load the model
