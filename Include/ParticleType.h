@@ -8,8 +8,8 @@
 
 struct ParticleType
 {
-    glm::vec3 position;
-    glm::vec3 velocity;
+    glm::vec4 position;
+    glm::vec4 velocity;
     float mass;
     float radius;
     glm::vec4 color;
@@ -18,15 +18,15 @@ struct ParticleType
     // Constructor
     ParticleType() 
     {
-        this->position = glm::vec3(0.0f, 0.0f, 0.0f);
-        this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+        this->position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        this->velocity = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
         this->mass = 1.0f;
         this->radius = 1.0f;
         this->color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
         this->size = 1.0f;
     }
 
-    ParticleType(glm::vec3 position, glm::vec3 velocity, float mass, float radius, glm::vec4 color, float size)
+    ParticleType(glm::vec4 position, glm::vec4 velocity, float mass, float radius, glm::vec4 color, float size)
     {
         this->position = position;
         this->velocity = velocity;
@@ -41,7 +41,7 @@ ParticleType getParticleA();
 ParticleType getParticleB();
 ParticleType getParticleC();
 
-glm::vec3 createPosition(float radius);
-glm::vec3 createVelocity(float minVelocity, float maxVelocity);
+glm::vec4 createPosition(float radius);
+glm::vec4 createVelocity(float minVelocity, float maxVelocity);
 
 #endif

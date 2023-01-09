@@ -7,7 +7,7 @@ out vec2 texCoord;
 out vec4 vColor;
 
 in vec4 color[1];
-in vec3 pos[1];
+in vec4 pos[1];
 in float vSize[1];
 
 uniform mat4 projection;

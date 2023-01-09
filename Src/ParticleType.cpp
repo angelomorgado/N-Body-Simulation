@@ -19,13 +19,13 @@ ParticleType getParticleA()
     float radius = maxRadius;
 
     // Position
-    glm::vec3 position = createPosition(radius);
+    glm::vec4 position = createPosition(radius);
 
     // Mass
     float mass = minMass + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxMass - minMass)));
 
     // Velocity
-    glm::vec3 velocity = createVelocity(minVelocity, maxVelocity);
+    glm::vec4 velocity = createVelocity(minVelocity, maxVelocity);
 
     // Size
     float size = minSize + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxSize - minSize)));
@@ -52,13 +52,13 @@ ParticleType getParticleB()
     float radius = maxRadius;
 
     // Position
-    glm::vec3 position = createPosition(radius);
+    glm::vec4 position = createPosition(radius);
 
     // Mass
     float mass = minMass + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxMass - minMass)));
 
     // Velocity
-    glm::vec3 velocity = createVelocity(minVelocity, maxVelocity);
+    glm::vec4 velocity = createVelocity(minVelocity, maxVelocity);
 
     // Size
     float size = minSize + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxSize - minSize)));
@@ -85,13 +85,13 @@ ParticleType getParticleC()
     float radius = maxRadius;
 
     // Position
-    glm::vec3 position = createPosition(radius);
+    glm::vec4 position = createPosition(radius);
 
     // Mass
     float mass = minMass + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxMass - minMass)));
 
     // Velocity
-    glm::vec3 velocity = createVelocity(minVelocity, maxVelocity);
+    glm::vec4 velocity = createVelocity(minVelocity, maxVelocity);
 
     // Size
     float size = minSize + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxSize - minSize)));
@@ -100,7 +100,7 @@ ParticleType getParticleC()
 }
 
 // Auxiliary functions
-glm::vec3 createPosition(float radius) {
+glm::vec4 createPosition(float radius) {
     float u = rand() / (float)RAND_MAX; //random number between 0 and 1
     float x1 = rand() / (float)RAND_MAX * 2.0 - 1.0; //random number between -1 and 1 for x.x
     float x2 = rand() / (float)RAND_MAX * 2.0 - 1.0; //random number between -1 and 1 for x.y
@@ -112,16 +112,16 @@ glm::vec3 createPosition(float radius) {
     x3 *= inv_mag; //turn x into a direction through normalization
     float c = std::cbrt(u) * radius; //rescale c with a cbrt to make the spherical density exactly uniform
     // glm::vec3 position = glm::vec3(x1*c, x2*c, x3*c); //get a random point by multiplying random position from the centre with a random direction
-    return glm::vec3(x1*c, x2*c, x3*c);
+    return glm::vec4(x1*c, x2*c, x3*c, 1.0f);
 }
 
 
-glm::vec3 createVelocity(float minVelocity, float maxVelocity)
+glm::vec4 createVelocity(float minVelocity, float maxVelocity)
 {
     float velocityX = minVelocity + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxVelocity - minVelocity)));
     float velocityY = minVelocity + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxVelocity - minVelocity)));
     float velocityZ = minVelocity + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (maxVelocity - minVelocity)));
-    glm::vec3 velocity = glm::vec3(velocityX, velocityY, velocityZ);
+    glm::vec4 velocity = glm::vec4(velocityX, velocityY, velocityZ, 1.0f);
 
     return velocity;
 }

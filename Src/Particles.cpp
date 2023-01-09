@@ -23,7 +23,7 @@ void Particles::Draw(Shader shader, Camera camera)
     setProjection(&shader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     setModel(
         &shader, // shader
-        glm::vec3(0.0f, 1.0f, 0.0f), // translation
+        glm::vec3(0.0f, 0.0f, 0.0f), // translation
         glm::vec3(1.0f, 0.0f, 0.0f), // rotation axis
         0.0f, // rotation angle
         glm::vec3(1.0f) // scale
@@ -93,7 +93,8 @@ void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, 
         float x = radius * glm::sin(phi) * glm::cos(theta);
         float y = radius * glm::sin(phi) * glm::sin(theta);
         float z = radius * glm::cos(phi);
-        this->positions.push_back(glm::vec3(x, y, z));
+        float w = 1.0f;
+        this->positions.push_back(glm::vec4(x, y, z, w));
 
         // Velocity
         float vx = rand() / (float)RAND_MAX;
@@ -102,7 +103,7 @@ void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, 
         vx = minSpeed + vx * (maxSpeed - minSpeed);
         vy = minSpeed + vy * (maxSpeed - minSpeed);
         vz = minSpeed + vz * (maxSpeed - minSpeed);
-        this->velocities.push_back(glm::vec3(vx, vy, vz));
+        this->velocities.push_back(glm::vec4(vx, vy, vz, w));
 
         // Mass
         float mass = rand() / (float)RAND_MAX;
@@ -140,9 +141,9 @@ void Particles::transferDataToGPU()
     // Position
     glBindBuffer(GL_ARRAY_BUFFER, this->positionBuffer);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, this->positionBuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->positions[0], GL_DYNAMIC_DRAW);
     
     // Size
     glBindBuffer(GL_ARRAY_BUFFER, this->sizeBuffer);
@@ -163,14 +164,14 @@ void Particles::transferDataToGPU()
     glEnableVertexAttribArray(3);
     glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, this->colorBuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->colors[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->colors[0], GL_DYNAMIC_DRAW);
 
     // Velocity
     glBindBuffer(GL_ARRAY_BUFFER, this->velocityBuffer);
     glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, this->velocityBuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->velocities[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->velocities[0], GL_DYNAMIC_DRAW);
 
     // Mass
     glBindBuffer(GL_ARRAY_BUFFER, this->massBuffer);

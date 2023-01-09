@@ -35,8 +35,8 @@ private:
     GLuint nParticles;
 
     // Attributes
-    std::vector<glm::vec3> positions;
-    std::vector<glm::vec3> velocities;
+    std::vector<glm::vec4> positions;
+    std::vector<glm::vec4> velocities;
     std::vector<float> masses;
     std::vector<float> radiuses;
     std::vector<glm::vec4> colors;
