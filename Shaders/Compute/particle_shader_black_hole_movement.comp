@@ -35,24 +35,26 @@ float max_distance = 50.0;
 void black_hole(uint id)
 {
     // Force from first black hole
-    vec4 force = vec4(0.0);
-    vec4 dist = vec4(first_black_hole_position,1.0) - vertexPosition[id];
+    vec3 force = vec3(0.0);
+    vec3 dist = first_black_hole_position - vertexPosition[id].xyz;
     force = (first_g_force / length(dist)) * normalize(dist);
 
     // Force from second black hole
-    dist = vec4(second_black_hole_position,1.0) - vertexPosition[id];
+    dist = second_black_hole_position - vertexPosition[id].xyz;
     force += (second_g_force / length(dist)) * normalize(dist);
 
     // Reset particles that go to far away from the black hole (attraction point)
     if(length(dist) > max_distance)
     {
-        vertexPosition[id] = vec4(0.0,0.0,0.0,1.0);
+        vertexPosition[id].xyz = vec3(0.0,0.0,0.0);
     }
     else
     {
-        vec4 acceleration = force * 1.0/vertexMass[id];
-        vertexPosition[id] = vec4(vertexPosition[id] + (vertexVelocity[id] * deltaTime) + (0.5 * acceleration * dot(deltaTime,deltaTime)));
-        vertexVelocity[id] = vec4(vertexVelocity[id] + (acceleration * deltaTime));
+        vec3 acceleration = force * 1.0/vertexMass[id];
+
+        // Update position
+        vertexPosition[id].xyz = vec3(vertexPosition[id].xyz + (vertexVelocity[id].xyz * deltaTime) + (0.5 * acceleration * dot(deltaTime,deltaTime)));
+        vertexVelocity[id].xyz = vec3(vertexVelocity[id].xyz + (acceleration * deltaTime));
     }
 }
 
