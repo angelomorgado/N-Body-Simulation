@@ -25,9 +25,9 @@ layout(std430, binding = 5) buffer _vertexMass{
 
 // variables a and b control the shape of the spiral
 // a == b => perfect circle | a > b ==> stretch horizontally | a < b ==> stretch vertically
-float a = 5.0;
-float b = 5.0;
-uniform float time;
+float a = 4.0;
+float b = 4.0;
+uniform float deltaTime;
 
 void spiral(uint id)
 {
@@ -41,6 +41,7 @@ void spiral(uint id)
    // application of the spiral motion equation 
     vertexPosition[id].x = a*cos(angle);
     vertexPosition[id].y = b*sin(angle);
+    vertexVelocity[id].xy = vec2(0.2,0.2);
 }
 
 // #--------------------------------------#
