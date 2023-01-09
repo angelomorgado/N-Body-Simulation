@@ -65,7 +65,7 @@ int main()
     Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
 	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
     Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
-    ComputeShader computeShader("Shaders/Compute/particle_shader_black_hole_movement.comp");
+    ComputeShader computeShader("Shaders/Compute/particle_shader_spiral.comp");
 
     //================================= Models ====================================================
 	// Load the model
@@ -132,6 +132,7 @@ int main()
         computeShader.setVec3("second_black_hole_position", kirby2Pos);
         computeShader.setFloat("first_g_force", kirby1Force);
         computeShader.setFloat("second_g_force", kirby2Force);
+        computeShader.setFloat("time", (float)glfwGetTime());
         computeShader.execute(N_PARTICLES / 64);
         particles.Draw(particleShader, camera);
 

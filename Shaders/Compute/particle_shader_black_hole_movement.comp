@@ -28,8 +28,8 @@ uniform vec3 first_black_hole_position;
 uniform vec3 second_black_hole_position;
 uniform float first_g_force;
 uniform float second_g_force;
-uniform float deltaT;
 
+float deltaTime = 0.0005;
 float max_distance = 50.0;
 
 void black_hole(uint id)
@@ -51,8 +51,8 @@ void black_hole(uint id)
     else
     {
         vec4 acceleration = force * 1.0/vertexMass[id];
-        vertexPosition[id] = vec4(vertexPosition[id] + (vertexVelocity[id] * deltaT) + (0.5 * acceleration * dot(deltaT,deltaT)));
-        vertexVelocity[id] = vec4(vertexVelocity[id] + (acceleration * deltaT));
+        vertexPosition[id] = vec4(vertexPosition[id] + (vertexVelocity[id] * deltaTime) + (0.5 * acceleration * dot(deltaTime,deltaTime)));
+        vertexVelocity[id] = vec4(vertexVelocity[id] + (acceleration * deltaTime));
     }
 }
 
