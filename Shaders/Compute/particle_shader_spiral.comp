@@ -25,8 +25,9 @@ layout(std430, binding = 5) buffer _vertexMass{
 
 // variables a and b control the shape of the spiral
 // a == b => perfect circle | a > b ==> stretch horizontally | a < b ==> stretch vertically
-float a = 4.0;
-float b = 4.0;
+float a = 5.0;
+float b = 5.0;
+uniform float time;
 
 void spiral(uint id)
 {
@@ -35,10 +36,11 @@ void spiral(uint id)
    // calculate the angle based on the arctan of y and x coordinates of the particles
    // convertion of the particle's velocity from degrees to radians
    // add the velocity of the particle to the angle value
-   float angle = atan(vertexPosition[id].y, vertexPosition[id].x) + vertexVelocity[id].x * acos(-1) / 180;
+    float angle = atan(vertexPosition[id].y, vertexPosition[id].x) + vertexVelocity[id].x * acos(-1) / 180;
 
    // application of the spiral motion equation 
-   vertexPosition[id] = vec4(a*cos(angle), b*sin(angle),vertexPosition[id].z, vertexPosition[id].w);
+    vertexPosition[id].x = a*cos(angle);
+    vertexPosition[id].y = b*sin(angle);
 }
 
 // #--------------------------------------#
