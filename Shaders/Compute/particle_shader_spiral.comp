@@ -27,7 +27,6 @@ layout(std430, binding = 5) buffer _vertexMass{
 // a == b => perfect circle | a > b ==> stretch horizontally | a < b ==> stretch vertically
 float a = 4.0;
 float b = 4.0;
-uniform float deltaTime;
 
 void spiral(uint id)
 {
