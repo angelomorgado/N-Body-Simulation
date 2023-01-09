@@ -27,7 +27,6 @@ uniform float deltaTime;
 // Constants
 const float G = 6.67408e-11;
 
-
 vec3 getGravitationalForce(vec3 r, float m1, float m2)
 {
     float d = length(r);
@@ -40,17 +39,12 @@ vec3 getGravitationalForce(vec3 r, float m1, float m2)
     return Gforce;
 }
 
-float random(vec2 st)
-{
-    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-}
-
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
     
-    vec4 Fe = vec4(0.0);
-    vec4 velocity = vec4(0.0);
+    vec3 Fe = vec3(0.0);
+    vec3 velocity = vec3(0.0);
 
     for(int i = 0; i < vertexPosition.length(); i++)
     {
@@ -65,12 +59,12 @@ void main()
         vec3 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
 
         // Calculate the gravitational force
-        Fe += vec4(Gforce,1.0);
+        Fe += Gforce;
     }   
 
-    // Calculate the new velocity
-    velocity += Fe / vertexMass[id] * deltaTime * 10e5;
+    // Update the velocity while keeping inertia
+    vertexVelocity[id].xyz += Fe / vertexMass[id] * deltaTime;
 
     // Calculate the new position
-    vertexPosition[id] += velocity;
+    vertexPosition[id].xyz += vertexVelocity[id].xyz;
 }

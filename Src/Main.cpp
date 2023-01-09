@@ -71,7 +71,7 @@ int main()
         point_cloud = 6
     };
 
-    GLuint activeScene = big_bang;
+    GLuint activeScene = physics;
 
     //=================================== Scenes ==============================================
     switch (activeScene)
