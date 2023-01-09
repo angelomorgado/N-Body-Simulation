@@ -23,6 +23,7 @@ layout(std430, binding = 5) buffer _vertexMass{
 
 // Uniforms
 uniform float deltaTime;
+uniform float time;
 
 // Get the force of an explosion
 vec3 getExplosionForce(vec3 position, vec3 velocity, float mass, float radius, float size, vec3 explosionPosition, float explosionForce)
@@ -50,9 +51,16 @@ void main()
     // Compute the acceleration
     vec3 acceleration = getExplosionForce(vertexPosition[id].xyz, vertexVelocity[id].xyz, vertexMass[id], vertexRadius[id], vertexSize[id], vec3(0.0, 0.0, 0.0), 20.0) / vertexMass[id];
 
-    // Compute the velocity
-    vertexVelocity[id].xyz += acceleration;
-
-    // Compute the position
-    vertexPosition[id].xyz += vertexVelocity[id].xyz * deltaTime / 1000.0;
+    if(time > 5)
+    {
+        // Compute the velocity
+        vertexVelocity[id].xyz += acceleration;
+        // Compute the position
+        vertexPosition[id].xyz += vertexVelocity[id].xyz * deltaTime / 1000.0;
+    }
+    else
+    {
+        // Go to the center
+        vertexPosition[id].xyz *= 0.995;
+    }
 }

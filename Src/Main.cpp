@@ -34,22 +34,18 @@
 #include <iostream>
 #include <thread>
 
-void checkForErrors()
-{
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cout << "OpenGL error: " << err << std::endl;
-    }
-}
+void renderScene_Physics(Camera* camera, GLFWwindow* window);
+void renderScene_SimpleBlackHole(Camera* camera, GLFWwindow* window);
+void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window);
+void renderScene_Explosion(Camera* camera, GLFWwindow* window);
+void renderScene_Spiral(Camera* camera, GLFWwindow* window);
 
-Camera camera;
-CameraPos cameraPos;
 
 // =============================== Global Variables =======================================
-#define N_PARTICLES 102400 // Number of particles
 #define PARTICLE_TEXTURE_PATH "Media/Textures/star.png" // Texture of the particles
 #define SKYBOX_PATH "Media/Skyboxes/skybox_galaxy/" // Texture to the skybox
+Camera camera;
+CameraPos cameraPos;
 
 int main()
 {
@@ -60,97 +56,218 @@ int main()
     glad_setup();
 	printGPUinfo();
 
-    //=================================== Shaders ==============================================
-    //Shader based on the file
-    Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
-	Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
-    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
-    ComputeShader computeShader("Shaders/Compute/particle_explosion.comp");
+    camera = Camera(
+        glm::vec3(-1.99221f, 1.42674f, 5.2215f), // Camera initial position (world position),
+		glm::vec3(7.0f, 2.0f, 0.0f) // Camera initial target (world position)
+    );
 
-    //================================= Models ====================================================
-	// Load the model
+    // Change scene
+    enum scenes{
+        physics = 1,
+        black_hole_simple = 2,
+        black_hole_complex = 3,
+        big_bang = 4,
+        spiral = 5,
+        point_cloud = 6
+    };
+
+    GLuint activeScene = big_bang;
+
+    //=================================== Scenes ==============================================
+    switch (activeScene)
+    {
+        case physics:
+            renderScene_Physics(&camera, window);
+            break;
+        case black_hole_simple:
+            renderScene_SimpleBlackHole(&camera, window);
+            break;
+        case black_hole_complex:
+            std::cout << "Entered!" << std::endl;
+            renderScene_ComplexBlackHole(&camera, window);
+            break;
+        case big_bang:
+            renderScene_Explosion(&camera, window);
+            break;
+        case spiral:
+            renderScene_Spiral(&camera, window);
+            break;
+        case point_cloud:
+            break;
+        default:
+            break;
+    }
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    glfwTerminate();
+    return 0;
+}
+
+
+// =================================== Scenes ===============================================
+void renderScene_Physics(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 10240;
+
+    // Shaders
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader physicsShader("Shaders/Compute/particle_shader_physics.comp");
+
+    // Skybox
+    Skybox skybox(SKYBOX_PATH);
+
+    // Particles
+    Particles particles(
+        nParticles, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
+    );
+
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update camera speed
+        camera->updateDeltaTime();
+
+        // input
+        processInput(window, camera);
+
+        // render
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw particles
+        physicsShader.use();
+        physicsShader.setFloat("deltaTime", camera->deltaTime);
+        physicsShader.execute(nParticles / 64);
+        particles.Draw(particleShader, *camera);
+
+        // Draw the Skybox 
+        skybox.Draw(skyboxShader, *camera);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+void renderScene_SimpleBlackHole(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 10240;
+
+    // Shaders
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader blackHoleSimpleShader("Shaders/Compute/particle_shader_black_hole.comp");
+
+    // Skybox
+    Skybox skybox(SKYBOX_PATH);
+
+    // Particles
+    Particles particles(
+        nParticles, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
+    );
+
+    // Variables
+    float kirby1Force = 1000.0f;
+
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update camera speed
+        camera->updateDeltaTime();
+
+        // input
+        processInput(window, camera);
+
+        // render
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw particles
+        blackHoleSimpleShader.use();
+        blackHoleSimpleShader.setFloat("first_g_force", kirby1Force);
+        blackHoleSimpleShader.execute(nParticles / 64);
+        particles.Draw(particleShader, *camera);
+
+        // Draw the Skybox 
+        skybox.Draw(skyboxShader, *camera);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 10240;
+
+    // Shaders
+    Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader blackHoleComplexShader("Shaders/Compute/particle_shader_black_hole_movement.comp");
+
+    // Skybox
     Skybox skybox(SKYBOX_PATH);
     Model kirby("Media/Objects/Kirby.fbx");
 
-    //================================= Particles =====================================
-    
-    // Create the particles
-    Particles particles(
-        N_PARTICLES, // Number of particles
-        PARTICLE_TEXTURE_PATH // Texture of the particles
-    );
-	
-	//================================ Light ========================================
-    // Default Light
+    // Object
     objectShader.use();
     objectShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
     objectShader.setVec3("light.position", 1.0f, 5.0f, 1.0f);
     objectShader.setVec3("light.ambient", 0.6f, 0.6f, 0.6f);
     objectShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
     objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    objectShader.setVec3("material.ambient", glm::vec3(1.0f));
+    objectShader.setVec3("material.diffuse", glm::vec3(0.6f));
+    objectShader.setVec3("material.specular", glm::vec3(0.6f));
+    objectShader.setFloat("material.shininess", 0.6f);
 
-    // Default Material
-    Material default_mat;
-    default_mat.Ambient   = glm::vec3(1.0f);
-    default_mat.Diffuse   = glm::vec3(0.6f);
-    default_mat.Specular  = glm::vec3(0.6f);
-    default_mat.Shininess = 0.6f;
+    // Particles
+    Particles particles(
+        nParticles, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
+    );
 
-    //================================= Scenes variables =====================================
+    // Variables
     glm::vec3 kirby1Pos = glm::vec3(-5.0f,0.0f,0.0f);
     float kirby1Force = 1000.0f;
     glm::vec3 kirby2Pos = glm::vec3(5.0f,0.0f,0.0f);
     float kirby2Force = 1000.0f;
 
-    // ====================================== Scene Setup ===============================================
-    camera = Camera(
-        glm::vec3(-1.99221f, 1.42674f, 5.2215f), // Camera initial position (world position),
-		glm::vec3(7.0f, 2.0f, 0.0f) // Camera initial target (world position)
-    );
- 
-    // Process all input Callbacks
-	processCallbacks(window, &camera, &cameraPos);
-	
-    // =================================== Main loop ===============================================
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
     while (!glfwWindowShouldClose(window))
     {
         // Update camera speed
-        camera.updateDeltaTime();
+        camera->updateDeltaTime();
 
         // input
-        processInput(window, &camera);
+        processInput(window, camera);
 
         // render
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Draw the particles
-        computeShader.use();
-        computeShader.setFloat("deltaTime", camera.deltaTime);
-        computeShader.setFloat("deltaTime", camera.deltaTime);
-        computeShader.setVec3("first_black_hole_position", kirby1Pos);
-        computeShader.setVec3("second_black_hole_position", kirby2Pos);
-        computeShader.setFloat("first_g_force", kirby1Force);
-        computeShader.setFloat("second_g_force", kirby2Force);
-        computeShader.setFloat("time", (float)glfwGetTime());
-        computeShader.execute(N_PARTICLES / 64);
-        particles.Draw(particleShader, camera);
-
         // Draw the first kirby
         objectShader.use();
-        setView(&objectShader, camera.GetViewMatrix());
-        setProjection(&objectShader, glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        setView(&objectShader, camera->GetViewMatrix());
+        setProjection(&objectShader, glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         setModel(
             &objectShader, // shader
             kirby1Pos, // translation
             glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
+            0.0f, // rotation angle
             glm::vec3(0.015f) // scale
         );
-        objectShader.setVec3("material.ambient", default_mat.Ambient);
-        objectShader.setVec3("material.diffuse", default_mat.Diffuse);
-        objectShader.setVec3("material.specular", default_mat.Specular);
-        objectShader.setFloat("material.shininess", default_mat.Shininess);
         kirby.Draw(objectShader);
 
         // Draw the second kirby
@@ -158,11 +275,10 @@ int main()
             &objectShader, // shader
             kirby2Pos, // translation
             glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f,//(float)glfwGetTime() * 2.5f, // rotation angle
+            0.0f, // rotation angle
             glm::vec3(0.015f) // scale
         );
-		kirby.Draw(objectShader);
-
+        kirby.Draw(objectShader);
 
         // Move the kirbies positions in a circle
         kirby1Pos = glm::vec3(
@@ -177,16 +293,116 @@ int main()
             5.0f * sin((float)glfwGetTime() * 0.5f + glm::radians(180.0f))
         );
 
+        // Compute shader
+        blackHoleComplexShader.use();
+        blackHoleComplexShader.setVec3("first_black_hole_position", kirby1Pos);
+        blackHoleComplexShader.setVec3("second_black_hole_position", kirby2Pos);
+        blackHoleComplexShader.setFloat("first_g_force", kirby1Force);
+        blackHoleComplexShader.setFloat("second_g_force", kirby2Force);
+        blackHoleComplexShader.execute(nParticles / 64);
+        particles.Draw(particleShader, *camera);
 
         // Draw the Skybox 
-        skybox.Draw(skyboxShader, camera);
+        skybox.Draw(skyboxShader, *camera);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+}
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    glfwTerminate();
-    return 0;
+void renderScene_Explosion(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 10240;
+
+    // Shaders
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader explosionShader("Shaders/Compute/particle_explosion.comp");
+
+    // Skybox
+    Skybox skybox(SKYBOX_PATH);
+
+    // Particles
+    Particles particles(
+        nParticles, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
+    );
+
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update camera speed
+        camera->updateDeltaTime();
+
+        // input
+        processInput(window, camera);
+
+        // render
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw particles
+        explosionShader.use();
+        explosionShader.setFloat("deltaTime", camera->deltaTime);
+        explosionShader.setFloat("time", (float)glfwGetTime());
+        explosionShader.execute(nParticles / 64);
+        particles.Draw(particleShader, *camera);
+
+        // Draw the Skybox 
+        skybox.Draw(skyboxShader, *camera);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
+void renderScene_Spiral(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 10240;
+
+    // Shaders
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader spiralShader("Shaders/Compute/particle_shader_spiral.comp");
+
+    // Skybox
+    Skybox skybox(SKYBOX_PATH);
+
+    // Particles
+    Particles particles(
+        nParticles, // Number of particles
+        PARTICLE_TEXTURE_PATH // Texture of the particles
+    );
+
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update camera speed
+        camera->updateDeltaTime();
+
+        // input
+        processInput(window, camera);
+
+        // render
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw particles
+        spiralShader.use();
+        spiralShader.execute(nParticles / 64);
+        particles.Draw(particleShader, *camera);
+
+        // Draw the Skybox 
+        skybox.Draw(skyboxShader, *camera);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
 }
