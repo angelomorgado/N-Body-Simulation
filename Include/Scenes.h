@@ -32,7 +32,7 @@ void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
     Particles particles(
         nParticles,// Number of particles
         PARTICLE_TEXTURE_PATH, // Texture of the particles
-        "big_pointcloud_2.txt",
+        "Media/PointClouds/big_pointcloud_2.txt",
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles
