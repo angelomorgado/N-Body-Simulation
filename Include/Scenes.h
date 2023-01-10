@@ -15,6 +15,75 @@
 // Camera camera;
 CameraPos cameraPos;
 
+
+void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
+{
+    GLuint nParticles = 5000000;
+
+    // Shaders
+    Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
+    Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
+    ComputeShader point_cloud("Shaders/Compute/particle_shader_h.comp");
+
+    // Skybox
+    Skybox skybox(SKYBOX_PATH);
+
+    // Particles
+    Particles particles(
+        nParticles,// Number of particles
+        PARTICLE_TEXTURE_PATH, // Texture of the particles
+        "big_pointcloud_2.txt",
+        1.0f, // Minimum mass of the particles
+        100.0f, // Maximum mass of the particles
+        0.1f, // Minimum radius of the particles
+        1.5f, // Maximum radius of the particles
+        0.0f, // Minimum speed of the particles
+        0.0f, // Maximum speed of the particles
+        0.2f, // Minimum size of the particles
+        0.8f // Maximum size of the particles
+    );
+
+    processCallbacks(window, camera, &cameraPos);
+
+    // Main loop
+    while (!glfwWindowShouldClose(window))
+    {
+        // Update camera speed
+        camera->updateDeltaTime();
+
+        // input
+        processInput(window, camera);
+
+        // render
+        glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw particles
+        point_cloud.use();
+        point_cloud.setFloat("deltaTime", camera->deltaTime);
+        point_cloud.execute(nParticles / 64);
+        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
+            point_cloud.setInt("option", 10);
+        }
+        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
+            point_cloud.setInt("option", 20);
+        }
+        if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS){
+            point_cloud.setInt("option", 30);
+        }
+
+        particles.Draw(particleShader, *camera);
+
+
+        // Draw the Skybox 
+        skybox.Draw(skyboxShader, *camera);
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
+
 void renderScene_Physics(Camera* camera, GLFWwindow* window)
 {
     GLuint nParticles = 10240;

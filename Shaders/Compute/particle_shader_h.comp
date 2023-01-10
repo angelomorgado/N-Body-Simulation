@@ -1,0 +1,92 @@
+#version 460 core
+
+layout (local_size_x = 64) in;
+
+layout(std430, binding = 0) buffer _vertexPosition {
+    vec4 vertexPosition[];
+};
+layout(std430, binding = 1) buffer _vertexSize{
+    float vertexSize[];
+};
+layout(std430, binding = 2) buffer _vertexRadius{
+    float vertexRadius[];
+};
+layout(binding = 3, std430) buffer _vertexColor{
+    vec4 vertexColor[];
+};
+layout(std430, binding = 4) buffer _vertexVelocity{
+    vec4 vertexVelocity[];
+};
+layout(std430, binding = 5) buffer _vertexMass{
+    float vertexMass[];
+};
+
+layout(std430, binding = 6) buffer _vertexPosition_2 {
+    vec4 vertexPosition_2[];
+};
+
+// Uniforms
+uniform float deltaTime;
+uniform int option;
+
+// Functions
+vec3 computeForces(vec3 position, float mass)
+{
+    return vec3(0.0, -9.8, 0.0) * mass;        
+}
+
+float get_centripetal_acceleration(vec3 velocity, float radius)
+{
+    float centripetal_acceleration = pow(length(velocity), 2.0) / radius;
+    return centripetal_acceleration;
+}
+
+float random(vec2 st)
+{
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+}
+
+void draw_sphere(uint id){
+    float radius = 1.0;
+    float theta = 2.0 * acos(-1) * random(vec2(id, radius));
+    float phi = 0.5 - acos(-1) * random(vec2(radius, id));
+
+    float x = radius * sin(phi) * cos(theta);
+    float y = radius * sin(phi) * sin(theta);
+    float z = radius * cos(phi);
+
+    vec3 pos = vec3(x, y, z);
+    vec3 r = pos - vertexPosition[id].xyz;
+    vertexVelocity[id].xyz = r * deltaTime * 100.0;
+
+    // Calculate the new position
+    vertexPosition[id].xyz += vertexVelocity[id].xyz * deltaTime;
+}
+
+/*
+void draw_cube(uint id){
+    float x = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+    float y = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+    float z = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+
+    vertexVelocity[id] = vec4(x, y, z, 1.0) * deltaTime * 100.0;
+    vertexPosition[id] += vertexVelocity[id] * deltaTime;
+}
+*/
+
+
+void main()
+{ 
+    uint id = gl_GlobalInvocationID.x;
+
+    vertexColor[id] = vec4(1.0, 0.0, 0.0, 0.5);
+
+
+    if (option == 10){
+        vertexPosition[id].xyz = vertexPosition[id].xyz + (vertexPosition_2[id].xyz - vertexPosition[id].xyz) * deltaTime;
+    }
+    if (option == 20){
+        draw_sphere(id);
+    }
+
+}

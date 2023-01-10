@@ -48,7 +48,7 @@ int main()
         point_cloud = 6
     };
 
-    GLuint activeScene = big_bang;
+    GLuint activeScene = point_cloud;
 
     //=================================== Scenes ==============================================
     switch (activeScene)
@@ -69,6 +69,7 @@ int main()
             renderScene_Spiral(&camera, window);
             break;
         case point_cloud:
+            renderScene_PointCloud(&camera, window);
             break;
         default:
             break;

@@ -21,10 +21,12 @@
 #include <Textures.h>
 #include <ParticleType.h>
 
+
+
 class Particles 
 {
 public:
-    Particles(GLuint nParticles, std::string texture_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
+    Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
     Particles(GLuint nParticles, std::string texture_path);
 
     // Draw one particle according to its index in the VAO and its characteristics
@@ -36,6 +38,7 @@ private:
 
     // Attributes
     std::vector<glm::vec4> positions;
+    std::vector<glm::vec4> positions_2;
     std::vector<glm::vec4> velocities;
     std::vector<float> masses;
     std::vector<float> radiuses;
@@ -45,6 +48,7 @@ private:
     Texture *texture;
 
     // Buffers
+    GLuint position_2Buffer;
     GLuint positionBuffer;
     GLuint velocityBuffer;
     GLuint massBuffer;
@@ -57,7 +61,7 @@ private:
 
     // Functions
     void getSpriteTexture(char* texture_path);
-    void generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
+    void generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize, bool sphere);
     void groupValues();
     void transferDataToGPU();
 };

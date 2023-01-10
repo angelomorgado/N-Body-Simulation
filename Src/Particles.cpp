@@ -1,8 +1,58 @@
 #include <Particles.h>
 
-Particles::Particles(GLuint nParticles, std::string texture_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+std::vector<glm::vec4> readVerticesFromFile(const std::string& filePath) {
+    std::vector<glm::vec4> vertices;
+
+    // Open the file using C-style file I/O
+    FILE* file = fopen(filePath.c_str(), "r");
+    if (file == nullptr) {
+        // Handle error
+    }
+
+    // Read the file in blocks of 4KB
+    const size_t blockSize = 4096;
+    char block[blockSize];
+    size_t numVertices = 0;
+    while (fgets(block, blockSize, file) != nullptr) {
+        // Split the block on newline characters
+        char* line = block;
+        while (line != nullptr) {
+            // Split the line on spaces
+            glm::vec4 vertex;
+            vertex.x = std::strtod(line, &line);
+            if (line == nullptr) break;
+            vertex.y = std::strtod(line, &line);
+            if (line == nullptr) break;
+            vertex.z = std::strtod(line, &line);
+            vertex.w = 1;
+
+            // Add the vertex to the list
+            if (numVertices < vertices.size()) {
+                vertices[numVertices] = vertex;
+            } else {
+                vertices.push_back(vertex);
+            }
+            ++numVertices;
+
+            // Move to the next line
+            line = strchr(line, '\n');
+            if (line != nullptr) ++line;
+        }
+    }
+
+    // Close the file
+    fclose(file);
+
+    // Trim the vector to the actual number of vertices
+    vertices.resize(numVertices);
+
+    return vertices;
+}
+
+Particles::Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
 {
-    generateValues(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize);
+    this->positions_2 = readVerticesFromFile(point_cloud_path);
+    generateValues(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize, false);
     transferDataToGPU();
     texture = new Texture(texture_path);
 }
@@ -74,7 +124,7 @@ void Particles::groupValues()
     }
 }
 
-void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize, bool sphere)
 {
     this->nParticles = nParticles;
 
@@ -90,10 +140,20 @@ void Particles::generateValues(GLuint nParticles, float minMass, float maxMass, 
         float phi = glm::pi<float>() * rand() / (float)RAND_MAX;
 
         // Position - Random position that form a sphere
-        float x = radius * glm::sin(phi) * glm::cos(theta);
-        float y = radius * glm::sin(phi) * glm::sin(theta);
-        float z = radius * glm::cos(phi);
-        float w = 1.0f;
+        float x, y, z, w;
+        if (sphere){
+            x = radius * glm::sin(phi) * glm::cos(theta);
+            y = radius * glm::sin(phi) * glm::sin(theta);
+            z = radius * glm::cos(phi);
+            w = 1.0f;
+        }
+        else{
+            x = minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+            y = minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+            z = minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+            w = 1.0f;
+        }
+
         this->positions.push_back(glm::vec4(x, y, z, w));
 
         // Velocity
@@ -133,6 +193,7 @@ void Particles::transferDataToGPU()
     glGenBuffers(1, &this->radiusBuffer);
     glGenBuffers(1, &this->colorBuffer);
     glGenBuffers(1, &this->sizeBuffer);
+    glGenBuffers(1, &this->position_2Buffer);
 
     // Initialize the VAO
     glGenVertexArrays(1, &this->VAO);
@@ -179,6 +240,13 @@ void Particles::transferDataToGPU()
     glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, this->massBuffer);
     glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(float), &this->masses[0], GL_DYNAMIC_DRAW);
+
+    // Position 2
+    glBindBuffer(GL_ARRAY_BUFFER, this->position_2Buffer);
+    glEnableVertexAttribArray(6);
+    glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, this->position_2Buffer);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions_2[0], GL_DYNAMIC_DRAW);
 
     glBindVertexArray(0);
 }
