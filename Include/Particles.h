@@ -26,7 +26,7 @@
 class Particles 
 {
 public:
-    Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
+    Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path[2], float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
     Particles(GLuint nParticles, std::string texture_path);
 
     // Draw one particle according to its index in the VAO and its characteristics
@@ -39,21 +39,27 @@ private:
     // Attributes
     std::vector<glm::vec4> positions;
     std::vector<glm::vec4> positions_2;
+    std::vector<glm::vec4> positions_3;
     std::vector<glm::vec4> velocities;
     std::vector<float> masses;
     std::vector<float> radiuses;
     std::vector<glm::vec4> colors;
+    std::vector<glm::vec4> colors_2;
+    std::vector<glm::vec4> colors_3;
     std::vector<float> sizes;
     GLuint spriteTexture;
     Texture *texture;
 
     // Buffers
-    GLuint position_2Buffer;
     GLuint positionBuffer;
+    GLuint position_2Buffer;
+    GLuint position_3Buffer;
     GLuint velocityBuffer;
     GLuint massBuffer;
     GLuint radiusBuffer;
     GLuint colorBuffer;
+    GLuint color_2Buffer;
+    GLuint color_3Buffer;
     GLuint sizeBuffer;
 
     // VAO

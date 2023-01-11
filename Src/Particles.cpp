@@ -1,57 +1,36 @@
 #include <Particles.h>
 
-std::vector<glm::vec4> readVerticesFromFile(const std::string& filePath) {
-    std::vector<glm::vec4> vertices;
+std::vector<std::vector<glm::vec4>> readData(const std::string &fileName)
+{
+    std::vector<glm::vec4> positions, colors;
 
-    // Open the file using C-style file I/O
-    FILE* file = fopen(filePath.c_str(), "r");
-    if (file == nullptr) {
-        // Handle error
+    std::ifstream file(fileName);
+    std::string line;
+    while (std::getline(file, line))
+    {
+        float x, y, z, r, g, b;
+        sscanf(line.c_str(), "%f %f %f %f %f %f", &x, &y, &z, &r, &g, &b);
+        positions.push_back({ x, y, z, 1.0 });
+        colors.push_back({ r, g, b, 1.0 });
     }
 
-    // Read the file in blocks of 4KB
-    const size_t blockSize = 4096;
-    char block[blockSize];
-    size_t numVertices = 0;
-    while (fgets(block, blockSize, file) != nullptr) {
-        // Split the block on newline characters
-        char* line = block;
-        while (line != nullptr) {
-            // Split the line on spaces
-            glm::vec4 vertex;
-            vertex.x = std::strtod(line, &line);
-            if (line == nullptr) break;
-            vertex.y = std::strtod(line, &line);
-            if (line == nullptr) break;
-            vertex.z = std::strtod(line, &line);
-            vertex.w = 1;
-
-            // Add the vertex to the list
-            if (numVertices < vertices.size()) {
-                vertices[numVertices] = vertex;
-            } else {
-                vertices.push_back(vertex);
-            }
-            ++numVertices;
-
-            // Move to the next line
-            line = strchr(line, '\n');
-            if (line != nullptr) ++line;
-        }
-    }
-
-    // Close the file
-    fclose(file);
-
-    // Trim the vector to the actual number of vertices
-    vertices.resize(numVertices);
-
-    return vertices;
+    return {positions,colors};
 }
 
-Particles::Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+Particles::Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path[2], float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
 {
-    this->positions_2 = readVerticesFromFile(point_cloud_path);
+    // read pos and colors from file
+    auto pos_colors_rose = readData(point_cloud_path[0]);
+    auto pos_colors_boat = readData(point_cloud_path[1]);
+
+    // boat
+    this->positions_2 = pos_colors_boat[0];
+    this->colors_2 = pos_colors_boat[1];
+
+    // rose
+    this->positions_3 = pos_colors_rose[0];
+    this->colors_3 = pos_colors_rose[1];
+
     generateValues(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize, false);
     transferDataToGPU();
     texture = new Texture(texture_path);
@@ -193,7 +172,11 @@ void Particles::transferDataToGPU()
     glGenBuffers(1, &this->radiusBuffer);
     glGenBuffers(1, &this->colorBuffer);
     glGenBuffers(1, &this->sizeBuffer);
+
     glGenBuffers(1, &this->position_2Buffer);
+    glGenBuffers(1, &this->color_2Buffer);
+    glGenBuffers(1, &this->position_3Buffer);
+    glGenBuffers(1, &this->color_3Buffer);
 
     // Initialize the VAO
     glGenVertexArrays(1, &this->VAO);
@@ -247,6 +230,27 @@ void Particles::transferDataToGPU()
     glVertexAttribPointer(6, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 6, this->position_2Buffer);
     glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions_2[0], GL_DYNAMIC_DRAW);
+
+    // Color 2
+    glBindBuffer(GL_ARRAY_BUFFER, this->color_2Buffer);
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 7, this->color_2Buffer);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->colors_2[0], GL_DYNAMIC_DRAW);
+
+    // Position 3
+    glBindBuffer(GL_ARRAY_BUFFER, this->position_3Buffer);
+    glEnableVertexAttribArray(8);
+    glVertexAttribPointer(8, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 8, this->position_3Buffer);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec3), &this->positions_3[0], GL_DYNAMIC_DRAW);
+
+    // Color 3
+    glBindBuffer(GL_ARRAY_BUFFER, this->color_3Buffer);
+    glEnableVertexAttribArray(9);
+    glVertexAttribPointer(9, 4, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 9, this->color_3Buffer);
+    glBufferData(GL_ARRAY_BUFFER, this->nParticles * sizeof(glm::vec4), &this->colors_3[0], GL_DYNAMIC_DRAW);
 
     glBindVertexArray(0);
 }

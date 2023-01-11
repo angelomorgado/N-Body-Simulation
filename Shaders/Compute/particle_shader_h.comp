@@ -24,6 +24,15 @@ layout(std430, binding = 5) buffer _vertexMass{
 layout(std430, binding = 6) buffer _vertexPosition_2 {
     vec4 vertexPosition_2[];
 };
+layout(binding = 7, std430) buffer _vertexColor_2{
+    vec4 vertexColor_2[];
+};
+layout(std430, binding = 8) buffer _vertexPosition_3 {
+    vec4 vertexPosition_3[];
+};
+layout(binding = 9, std430) buffer _vertexColor_3{
+    vec4 vertexColor_3[];
+};
 
 // Uniforms
 uniform float deltaTime;
@@ -57,35 +66,44 @@ void draw_sphere(uint id){
 
     vec3 pos = vec3(x, y, z);
     vec3 r = pos - vertexPosition[id].xyz;
-    vertexVelocity[id].xyz = r * deltaTime * 100.0;
 
-    // Calculate the new position
+    vertexVelocity[id].xyz = r * deltaTime * 100.0;
     vertexPosition[id].xyz += vertexVelocity[id].xyz * deltaTime;
 }
 
-/*
 void draw_cube(uint id){
-    float x = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
-    float y = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
-    float z = 1.0;//minRadius + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (maxRadius - minRadius)));
+    float x = random(vec2(0,1));//0.1 + random(vec2(0,1)) / (1 / 1.4);
+    float y = random(vec2(0,1));//0.1 + random(vec2(0,1)) / (1 / 1.4);
+    float z = random(vec2(0,1));//0.1 + random(vec2(0,1)) / (1 / 1.4);
 
-    vertexVelocity[id] = vec4(x, y, z, 1.0) * deltaTime * 100.0;
-    vertexPosition[id] += vertexVelocity[id] * deltaTime;
+    vec3 pos = vec3(x, y, z);
+
+    vertexVelocity[id].xyz = (pos - vertexPosition[id].xyz) * deltaTime * 100.0;
+    vertexPosition[id].xyz += vertexVelocity[id].xyz * deltaTime;
 }
-*/
 
 
 void main()
 { 
     uint id = gl_GlobalInvocationID.x;
 
-    vertexColor[id] = vec4(1.0, 0.0, 0.0, 0.5);
+    vertexColor[id] = vec4(1.0, 1.0, 1.0, 0.5);
 
 
+    vec4 aux;
     if (option == 10){
+        // boat
         vertexPosition[id].xyz = vertexPosition[id].xyz + (vertexPosition_2[id].xyz - vertexPosition[id].xyz) * deltaTime;
+        vertexColor[id] = vec4(vertexColor_2[id].xyz / 255, 0.5);
+
     }
     if (option == 20){
+        // rose
+        vertexPosition[id].xyz = vertexPosition[id].xyz + (vertexPosition_3[id].xyz - vertexPosition[id].xyz) * deltaTime;
+        vertexColor[id] = vec4(vertexColor_3[id].xyz / 255, 0.5);
+    }
+    if( option == 30){
+        // sphere
         draw_sphere(id);
     }
 

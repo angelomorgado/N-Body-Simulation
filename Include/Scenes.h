@@ -18,7 +18,8 @@ CameraPos cameraPos;
 
 void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
 {
-    GLuint nParticles = 5000000;
+    //GLuint nParticles = 5000000;
+    GLuint nParticles = 1000000;
 
     // Shaders
     Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
@@ -28,11 +29,13 @@ void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
     // Skybox
     Skybox skybox(SKYBOX_PATH);
 
+    std::string path[2] = {"Media/PointClouds/rose_1M.txt", "Media/PointClouds/boat_1M.txt"};
+
     // Particles
     Particles particles(
         nParticles,// Number of particles
         PARTICLE_TEXTURE_PATH, // Texture of the particles
-        "Media/PointClouds/big_pointcloud_2.txt",
+        path,      
         1.0f, // Minimum mass of the particles
         100.0f, // Maximum mass of the particles
         0.1f, // Minimum radius of the particles
@@ -62,13 +65,16 @@ void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
         point_cloud.use();
         point_cloud.setFloat("deltaTime", camera->deltaTime);
         point_cloud.execute(nParticles / 64);
-        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS){
+            // boat
             point_cloud.setInt("option", 10);
         }
-        if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS){
+            // rose
             point_cloud.setInt("option", 20);
         }
-        if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS){
+        if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS){
+            // sphere
             point_cloud.setInt("option", 30);
         }
 
