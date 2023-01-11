@@ -36,6 +36,13 @@ Particles::Particles(GLuint nParticles, std::string texture_path, std::string po
     texture = new Texture(texture_path);
 }
 
+Particles::Particles(GLuint nParticles, std::string texture_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize)
+{
+    generateValues(nParticles, minMass, maxMass, minRadius, maxRadius, minSpeed, maxSpeed, minSize, maxSize, false);
+    transferDataToGPU();
+    texture = new Texture(texture_path);
+}
+
 Particles::Particles(GLuint nParticles, std::string texture_path)
 {
     this->nParticles = nParticles;

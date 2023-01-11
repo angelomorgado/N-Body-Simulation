@@ -23,6 +23,8 @@ layout(std430, binding = 5) buffer _vertexMass{
 
 // Uniforms
 uniform float deltaTime;
+uniform float forceMultiplier;
+uniform float massMultiplier;
 
 // Constants
 const float G = 6.67408e-11;
@@ -34,7 +36,7 @@ vec3 getGravitationalForce(vec3 r, float m1, float m2)
     r *= inv_d ;
 
     // Calculate the gravitational force
-    vec3 Gforce = (G * m1 * m2) * ( inv_d * inv_d ) * r;
+    vec3 Gforce = (G * m1 * m2 * massMultiplier) * ( inv_d * inv_d ) * r;
 
     return Gforce;
 }
@@ -55,7 +57,7 @@ void main()
         vec3 r = vertexPosition[i].xyz - vertexPosition[id].xyz;
 
         // vec4 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
-        vec3 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]);
+        vec3 Gforce = getGravitationalForce(r, vertexMass[i], vertexMass[id]) * forceMultiplier;
 
         // Calculate the gravitational force
         Fe += Gforce;

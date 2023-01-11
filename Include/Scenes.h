@@ -93,6 +93,8 @@ void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
 void renderScene_Physics(Camera* camera, GLFWwindow* window)
 {
     GLuint nParticles = 10240;
+    float forceMultiplier = 1.0f;
+    float massMultiplier = 1.0f;
 
     // Shaders
     Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
@@ -123,9 +125,32 @@ void renderScene_Physics(Camera* camera, GLFWwindow* window)
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // Input
+        // Force Multiplier
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+            forceMultiplier += 1.0f;
+            cout << "Force multiplier: " << forceMultiplier << std::endl;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            forceMultiplier -= 1.0f;
+            cout << "Force multiplier: " << forceMultiplier << std::endl;
+        }
+
+        // Mass Multiplier
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            massMultiplier *= 1.1f;
+            cout << "mass multiplier: " << massMultiplier << std::endl;
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            massMultiplier /= 1.1f;
+            cout << "mass multiplier: " << massMultiplier << std::endl;
+        }
+
         // Draw particles
         physicsShader.use();
         physicsShader.setFloat("deltaTime", camera->deltaTime);
+        physicsShader.setFloat("forceMultiplier", forceMultiplier);
+        physicsShader.setFloat("massMultiplier", massMultiplier);
         physicsShader.execute(nParticles / 64);
         particles.Draw(particleShader, *camera);
 
@@ -246,14 +271,22 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
     // Particles
     Particles particles(
         nParticles, // Number of particles
-        PARTICLE_TEXTURE_PATH // Texture of the particles
+        PARTICLE_TEXTURE_PATH, // Texture of the particles
+        2.0f, // Min Mass of the particles
+        4.0f, // Max Mass of the particles
+        0.1f, // Min Radius of the particles
+        4.5f, // Max Radius of the particles
+        -1.0f, // Min Speed of the particles
+        1.0f, // Max Speed of the particles
+        1.0f, // Min Size of the particles
+        2.0f // Max Size of the particles
     );
 
     // Variables
     glm::vec3 kirby1Pos = glm::vec3(-5.0f,0.0f,0.0f);
-    float kirby1Force = 1000.0f;
+    float kirby1Force = 3000.0f;
     glm::vec3 kirby2Pos = glm::vec3(5.0f,0.0f,0.0f);
-    float kirby2Force = 1000.0f;
+    float kirby2Force = 3000.0f;
 
     processCallbacks(window, camera, &cameraPos);
 
@@ -283,6 +316,25 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
         );
         kirby.Draw(objectShader);
 
+        // Get input
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+            kirby1Force = 3500.0f;
+            kirby2Force = 10.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+            kirby1Force = 10.0f;
+            kirby2Force = 35000.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+            kirby1Force = 3000.0f;
+            kirby2Force = 3000.0f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+            kirby1Force = 10000.0f;
+            kirby2Force = 10000.0f;
+        }
+        
+
         // Draw the second kirby
         setModel(
             &objectShader, // shader
@@ -295,15 +347,15 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
 
         // Move the kirbies positions in a circle
         kirby1Pos = glm::vec3(
-            5.0f * cos((float)glfwGetTime() * 0.5f),
+            5.0f * cos((float)glfwGetTime() * 0.25f),
             0.0f,
-            5.0f * sin((float)glfwGetTime() * 0.5f)
+            5.0f * sin((float)glfwGetTime() * 0.25f)
         );
 
         kirby2Pos = glm::vec3(
-            5.0f * cos((float)glfwGetTime() * 0.5f + glm::radians(180.0f)),
+            5.0f * cos((float)glfwGetTime() * 0.25f + glm::radians(180.0f)),
             0.0f,
-            5.0f * sin((float)glfwGetTime() * 0.5f + glm::radians(180.0f))
+            5.0f * sin((float)glfwGetTime() * 0.25f + glm::radians(180.0f))
         );
 
         // Compute shader

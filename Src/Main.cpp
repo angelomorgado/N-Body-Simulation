@@ -38,7 +38,7 @@ int main()
 		glm::vec3(7.0f, 2.0f, 0.0f) // Camera initial target (world position)
     );
 
-    // Available scene
+    // Available scenes
     enum scenes{
         physics = 1,
         black_hole_simple = 2,
@@ -48,7 +48,7 @@ int main()
         point_cloud = 6
     };
 
-    GLuint activeScene = point_cloud;
+    GLuint activeScene = physics;
 
     //=================================== Scenes ==============================================
     switch (activeScene)

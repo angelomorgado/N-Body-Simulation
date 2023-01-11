@@ -28,6 +28,7 @@ class Particles
 public:
     Particles(GLuint nParticles, std::string texture_path, std::string point_cloud_path[2], float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
     Particles(GLuint nParticles, std::string texture_path);
+    Particles(GLuint nParticles, std::string texture_path, float minMass, float maxMass, float minRadius, float maxRadius, float minSpeed, float maxSpeed, float minSize, float maxSize);
 
     // Draw one particle according to its index in the VAO and its characteristics
     void Draw(Shader shader, Camera camera);
