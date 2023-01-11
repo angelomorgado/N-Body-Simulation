@@ -143,12 +143,26 @@ void renderScene_SimpleBlackHole(Camera* camera, GLFWwindow* window)
     GLuint nParticles = 10240;
 
     // Shaders
+    Shader objectShader("Shaders/targetShader.vert", "Shaders/targetShader.frag");
     Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
     Shader particleShader("Shaders/particlesShader.vert", "Shaders/particlesShader.frag", "Shaders/particlesShader.geom");
     ComputeShader blackHoleSimpleShader("Shaders/Compute/particle_shader_black_hole.comp");
 
     // Skybox
     Skybox skybox(SKYBOX_PATH);
+    Model kirby("Media/Objects/kirby.obj");
+
+    // Object
+    objectShader.use();
+    objectShader.setVec3("objectColor", 1.0f, 1.0f, 1.0f);
+    objectShader.setVec3("light.position", 1.0f, 5.0f, 1.0f);
+    objectShader.setVec3("light.ambient", 0.6f, 0.6f, 0.6f);
+    objectShader.setVec3("light.diffuse", 1.0f, 1.0f, 1.0f);
+    objectShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    objectShader.setVec3("material.ambient", glm::vec3(1.0f));
+    objectShader.setVec3("material.diffuse", glm::vec3(0.6f));
+    objectShader.setVec3("material.specular", glm::vec3(0.6f));
+    objectShader.setFloat("material.shininess", 0.6f);
 
     // Particles
     Particles particles(
@@ -157,6 +171,7 @@ void renderScene_SimpleBlackHole(Camera* camera, GLFWwindow* window)
     );
 
     // Variables
+    glm::vec3 kirby1Pos = glm::vec3(0.0f,0.0f,0.0f);
     float kirby1Force = 1000.0f;
 
     processCallbacks(window, camera, &cameraPos);
@@ -173,6 +188,19 @@ void renderScene_SimpleBlackHole(Camera* camera, GLFWwindow* window)
         // render
         glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Draw the kirby
+        objectShader.use();
+        setView(&objectShader, camera->GetViewMatrix());
+        setProjection(&objectShader, glm::radians(camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        setModel(
+            &objectShader, // shader
+            kirby1Pos, // translation
+            glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
+            220.0f, // rotation angle
+            glm::vec3(0.10f) // scale
+        );
+        kirby.Draw(objectShader);
 
         // Draw particles
         blackHoleSimpleShader.use();
@@ -201,7 +229,7 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
 
     // Skybox
     Skybox skybox(SKYBOX_PATH);
-    Model kirby("Media/Objects/Kirby.fbx");
+    Model kirby("Media/Objects/kirby.obj");
 
     // Object
     objectShader.use();
@@ -250,8 +278,8 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
             &objectShader, // shader
             kirby1Pos, // translation
             glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f, // rotation angle
-            glm::vec3(0.015f) // scale
+            220.0f, // rotation angle
+            glm::vec3(0.080f) // scale
         );
         kirby.Draw(objectShader);
 
@@ -260,8 +288,8 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
             &objectShader, // shader
             kirby2Pos, // translation
             glm::vec3(0.0f, 1.0f, 0.0f), // rotation axis
-            0.0f, // rotation angle
-            glm::vec3(0.015f) // scale
+            220.0f, // rotation angle
+            glm::vec3(0.080f) // scale
         );
         kirby.Draw(objectShader);
 
