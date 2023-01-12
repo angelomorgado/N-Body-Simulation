@@ -48,7 +48,7 @@ int main()
         point_cloud = 6
     };
 
-    GLuint activeScene = physics;
+    GLuint activeScene = point_cloud;
 
     //=================================== Scenes ==============================================
     switch (activeScene)

@@ -68,8 +68,8 @@ ParticleType getParticleC()
     float maxRadius = 4.5f;
     float minMass = 20.0f * 1000.0f;
     float maxMass = 25.0f * 1000.0f;
-    float minSize = 2.0f;
-    float maxSize = 3.0f;
+    float minSize = 7.0f;
+    float maxSize = 8.0f;
 
     // Color
     glm::vec4 color = glm::vec4(0.72f, 0.086f, 0.086f, 1.0f);

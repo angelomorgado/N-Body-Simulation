@@ -83,7 +83,7 @@ void Particles::Draw(Shader shader, Camera camera)
 
 void Particles::groupValues()
 {
-    float probA = 0.9, probB = 0.09, probC = 0.01;
+    float probA = 0.9, probB = 0.099, probC = 0.001;
     for (GLuint i = 0; i < nParticles; i++)
     {
         ParticleType type;

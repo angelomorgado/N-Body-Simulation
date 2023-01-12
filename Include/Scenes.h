@@ -378,7 +378,7 @@ void renderScene_ComplexBlackHole(Camera* camera, GLFWwindow* window)
 
 void renderScene_Explosion(Camera* camera, GLFWwindow* window)
 {
-    GLuint nParticles = 10240;
+    GLuint nParticles = 1024000;
 
     // Shaders
     Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
@@ -427,7 +427,7 @@ void renderScene_Explosion(Camera* camera, GLFWwindow* window)
 
 void renderScene_Spiral(Camera* camera, GLFWwindow* window)
 {
-    GLuint nParticles = 10240;
+    GLuint nParticles = 102400;
 
     // Shaders
     Shader skyboxShader("Shaders/skyboxShader.vert", "Shaders/skyboxShader.frag");
