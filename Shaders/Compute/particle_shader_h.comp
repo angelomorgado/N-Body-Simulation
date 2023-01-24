@@ -57,7 +57,7 @@ float random(vec2 st)
 
 void draw_sphere(uint id){
     float radius = 1.0;
-    float theta = 2.0 * acos(-1) * random(vec2(id, radius));
+    float theta = 2.0 * acos(-1) * random(vec2(id, radius)); 
     float phi = 0.5 - acos(-1) * random(vec2(radius, id));
 
     float x = radius * sin(phi) * cos(theta);

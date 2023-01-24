@@ -18,7 +18,6 @@ CameraPos cameraPos;
 
 void renderScene_PointCloud(Camera* camera, GLFWwindow* window)
 {
-    //GLuint nParticles = 5000000;
     GLuint nParticles = 1000000;
 
     // Shaders
